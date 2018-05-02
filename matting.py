@@ -7,58 +7,68 @@ from keras import backend as K
 from sklearn.metrics import log_loss
 
 
-def matting_model(img_rows, img_cols, channel=1, num_classes=None):
+def matting_model(img_rows, img_cols, channel=3):
     model = Sequential()
     # for Tensorflow backend
     model.add(ZeroPadding2D((1, 1), input_shape=(img_rows, img_cols, channel)))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Conv2D(64, (3, 3), activation='relu', name='conv1_1'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Conv2D(64, (3, 3), activation='relu', name='conv1_2'))
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(128, (3, 3), activation='relu'))
+    model.add(Conv2D(128, (3, 3), activation='relu', name='conv2_1'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(128, (3, 3), activation='relu'))
+    model.add(Conv2D(128, (3, 3), activation='relu', name='conv2_2'))
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu'))
+    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_1'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu'))
+    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_2'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu'))
+    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_3'))
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_1'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_2'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_3'))
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_1'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_2'))
     model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu'))
+    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_3'))
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     # Add Fully Connected Layer
-    model.add(Flatten())
-    model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(1000, activation='softmax'))
+    model.add(Flatten(name='flat1'))
+    model.add(Dense(4096, activation='relu', name='dense1'))
+    model.add(Dropout(0.5))  # dropout_1
+    model.add(Dense(4096, activation='relu'))  # dense_2
+    model.add(Dropout(0.5))  # dropout_2
+    model.add(Dense(1000, activation='softmax'))  # dense_3
 
     # Loads ImageNet pre-trained data
-    weights_path = 'imagenet_models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    weights_path = 'models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
     model.load_weights(weights_path)
 
-    model.summary()
+    model.layers.pop()  # dense_3
+    model.layers.pop()  # dropout_2
+    model.layers.pop()  # dense_2
+    model.layers.pop()  # dropout_1
+    model.layers.pop()  # dense_1
+    model.layers.pop()  # flat1
+
+    #model.add(Conv2D(512, (1, 1), activation='relu', name='deconv6'))
+
+    print(model.output_shape)
+    print(model.summary())
 
     # Learning rate is changed to 0.001
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
@@ -68,13 +78,11 @@ def matting_model(img_rows, img_cols, channel=1, num_classes=None):
 
 
 if __name__ == '__main__':
-    # Example to fine-tune on 3000 samples from Cifar10
-
-    img_rows, img_cols = 224, 224  # Resolution of inputs
+    img_rows, img_cols = 224, 224
     channel = 3
     num_classes = 10
     batch_size = 16
     epochs = 10
 
     # Load our model
-    model = matting_model(img_rows, img_cols, channel, num_classes)
+    model = matting_model(img_rows, img_cols, channel)
