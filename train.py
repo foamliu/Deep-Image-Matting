@@ -4,10 +4,12 @@ import cv2 as cv
 import keras
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from matting import matting_model
+from console_progressbar import ProgressBar
 
 
 def load_data():
     # (num_samples, 224, 224, 3)
+    pb = ProgressBar(total=100, prefix='Loading data', suffix='', decimals=3, length=50, fill='=')
     x_train = np.empty((num_samples, 224, 224, 3), dtype=np.int32)
     y_train = np.empty((num_samples, 224, 224, 1), dtype=np.int32)
     for i in range(num_samples):
@@ -17,6 +19,7 @@ def load_data():
         rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
         x_train[i, :, :, :] = rgb_img
         y_train[i, :, :, 0] = gray_img
+        pb.print_progress_bar((i + 1) * 100 / num_samples)
     return x_train, y_train
 
 
