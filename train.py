@@ -1,10 +1,11 @@
 import numpy as np
 import os
 import cv2 as cv
+from vgg16 import vgg16_model
 import keras
 from keras.layers import Conv2D, UpSampling2D
+from keras.models import load_model
 import keras.backend as K
-from vgg16 import vgg16_model
 
 
 def load_data():
@@ -67,8 +68,6 @@ def matting_model(img_rows, img_cols, channel=3):
     print(model.summary())
 
     model.compile(optimizer='adam', loss=matting_loss)
-    model.save('model.h5')
-
     return model
 
 
@@ -85,6 +84,9 @@ if __name__ == '__main__':
 
     # Load our model
     model = matting_model(img_rows, img_cols, channel)
+    model.save_weights('model_weights.h5')
+    #model = load_weights('model.h5')
+    print(model.summary())
 
     # callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
