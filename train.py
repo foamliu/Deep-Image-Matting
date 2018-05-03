@@ -72,7 +72,7 @@ def encoder_decoder_model(img_rows, img_cols, channel=3):
 
 if __name__ == '__main__':
     img_rows, img_cols = 224, 224
-    num_samples = 100
+    num_samples = 8041
     channel = 3
     num_classes = 10
     batch_size = 16
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     # Load our model
     model = encoder_decoder_model(img_rows, img_cols, channel)
 
-    model.fit(x_train, y_train, steps_per_epoch=num_samples // batch_size, epochs=50)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=50)
