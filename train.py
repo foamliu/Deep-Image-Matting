@@ -90,8 +90,9 @@ if __name__ == '__main__':
 
     model.fit(x_train,
               y_train,
+              batch_size=batch_size,
               epochs=50,
-              steps_per_epoch=num_samples // batch_size,
+              #steps_per_epoch=num_samples // batch_size,
               callbacks=callbacks,
               verbose=1
     )
