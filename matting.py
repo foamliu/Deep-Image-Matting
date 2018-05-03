@@ -1,88 +1,72 @@
-from keras.models import Sequential
-from keras.optimizers import SGD
+from vgg16 import vgg16_model
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, AveragePooling2D, ZeroPadding2D, Dropout, Flatten, merge, \
-    Reshape, Activation
-from keras import backend as K
-
-from sklearn.metrics import log_loss
+    Reshape, Activation, UpSampling2D
+from keras.preprocessing.image import ImageDataGenerator
 
 
 def matting_model(img_rows, img_cols, channel=3):
-    model = Sequential()
-    # for Tensorflow backend
-    model.add(ZeroPadding2D((1, 1), input_shape=(img_rows, img_cols, channel)))
-    model.add(Conv2D(64, (3, 3), activation='relu', name='conv1_1'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(64, (3, 3), activation='relu', name='conv1_2'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
+    model = vgg16_model(img_rows, img_cols, channel, num_classes)
 
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(128, (3, 3), activation='relu', name='conv2_1'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(128, (3, 3), activation='relu', name='conv2_2'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
+    dense_1 = model.get_layer('dense_1')
+    flatten_1 = model.get_layer('flatten_1')
 
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_1'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_2'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(256, (3, 3), activation='relu', name='conv3_3'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
-
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_1'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_2'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv4_3'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
-
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_1'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_2'))
-    model.add(ZeroPadding2D((1, 1)))
-    model.add(Conv2D(512, (3, 3), activation='relu', name='conv5_3'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
-
-    # Add Fully Connected Layer
-    model.add(Flatten(name='flat1'))
-    model.add(Dense(4096, activation='relu', name='dense1'))
-    model.add(Dropout(0.5))  # dropout_1
-    model.add(Dense(4096, activation='relu'))  # dense_2
-    model.add(Dropout(0.5))  # dropout_2
-    model.add(Dense(1000, activation='softmax'))  # dense_3
-
-    # Loads ImageNet pre-trained data
-    weights_path = 'models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-    model.load_weights(weights_path)
-
-    model.layers.pop()  # dense_3
+    model.layers.pop()  # dense_4
     model.layers.pop()  # dropout_2
     model.layers.pop()  # dense_2
     model.layers.pop()  # dropout_1
     model.layers.pop()  # dense_1
-    model.layers.pop()  # flat1
+    model.layers.pop()  # flatten_1
 
-    #model.add(Conv2D(512, (1, 1), activation='relu', name='deconv6'))
+    model.outputs = [model.layers[-1].output]
+    model.layers[-1].outbound_nodes = []
+    model.add(Conv2D(512, (1, 1), activation='relu', padding='same', name='deconv6'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5_1'))
+    model.add(Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5_2'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(256, (5, 5), activation='relu', padding='same', name='deconv4_1'))
+    model.add(Conv2D(256, (5, 5), activation='relu', padding='same', name='deconv4_2'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(128, (5, 5), activation='relu', padding='same', name='deconv3_1'))
+    model.add(Conv2D(128, (5, 5), activation='relu', padding='same', name='deconv3_2'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv2_1'))
+    model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv2_2'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1_1'))
+    model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1_2'))
+    model.add(Conv2D(1, (5, 5), activation='relu', padding='same', name='pred'))
 
-    print(model.output_shape)
+    model.outputs = [model.layers[-1].output]
+    model.layers[-1].outbound_nodes = []
+
     print(model.summary())
 
-    # Learning rate is changed to 0.001
-    sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy')
 
     return model
 
 
 if __name__ == '__main__':
     img_rows, img_cols = 224, 224
+    num_train_samples = 1595
     channel = 3
     num_classes = 10
     batch_size = 16
     epochs = 10
+    train_data = 'data/test'
+
+    train_data_gen = ImageDataGenerator(rotation_range=20.,
+                                        width_shift_range=0.1,
+                                        height_shift_range=0.1,
+                                        zoom_range=0.2,
+                                        horizontal_flip=True)
+    train_generator = train_data_gen.flow_from_directory(train_data, (img_cols, img_rows), batch_size=batch_size,
+                                                         class_mode=None)
 
     # Load our model
     model = matting_model(img_rows, img_cols, channel)
+
+    model.fit_generator(train_generator,
+                        steps_per_epoch=num_train_samples//batch_size,
+                        epochs=50)
