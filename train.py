@@ -10,8 +10,8 @@ from console_progressbar import ProgressBar
 def load_data():
     # (num_samples, 224, 224, 3)
     pb = ProgressBar(total=100, prefix='Loading data', suffix='', decimals=3, length=50, fill='=')
-    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.int32)
-    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.int32)
+    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.float32)
+    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.float32)
     for i in range(num_samples):
         filename = os.path.join('data/test', '%05d.jpg' % (i + 1))
         bgr_img = cv.imread(filename)
