@@ -70,9 +70,9 @@ if __name__ == '__main__':
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     trained_models_path = 'models/model'
     model_names = trained_models_path + '.{epoch:02d}-{loss:.2f}.hdf5'
-    model_checkpoint = ModelCheckpoint(model_names, monitor='loss', verbose=1, save_best_only=True)
-    early_stop = EarlyStopping('loss', patience=patience)
-    reduce_lr = ReduceLROnPlateau('loss', factor=0.1, patience=int(patience / 4), verbose=1)
+    model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
+    early_stop = EarlyStopping('val_loss', patience=patience)
+    reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     # Start Fine-tuning
