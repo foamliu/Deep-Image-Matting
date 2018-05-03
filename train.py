@@ -24,7 +24,7 @@ def load_data():
 def matting_loss(y_true, y_pred):
     epsilon = 1e-6
     epsilon_sqr = epsilon**2
-    return K.sum(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
+    return np.mean(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
 
 
 def encoder_decoder_model(img_rows, img_cols, channel=3):
