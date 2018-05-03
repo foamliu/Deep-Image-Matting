@@ -1,10 +1,31 @@
+import numpy as np
+import os
+import cv2 as cv
 from vgg16 import vgg16_model
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, AveragePooling2D, ZeroPadding2D, Dropout, Flatten, merge, \
-    Reshape, Activation, UpSampling2D
-from keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Conv2D, UpSampling2D
 
 
-def matting_model(img_rows, img_cols, channel=3):
+def load_data():
+    # (num_samples, 224, 224, 3)
+    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.uint8)
+    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.uint8)
+    for i in range(num_samples):
+        filename = os.path.join('data/test', '%05d' % (i + 1))
+        bgr_img = cv.imread(filename)
+        gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
+        rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
+        x_train[i, :, :, :] = rgb_img
+        y_train[i, :, :, :] = gray_img
+    return x_train, y_train
+
+
+def matting_loss(y_true, y_pred):
+    epsilon = 1e-6
+    epsilon_sqr = epsilon**2
+    return np.sum(np.sqrt(np.power((y_true - y_pred), 2) + epsilon_sqr))
+
+
+def encoder_decoder_model(img_rows, img_cols, channel=3):
     model = vgg16_model(img_rows, img_cols, channel, num_classes)
 
     dense_1 = model.get_layer('dense_1')
@@ -42,31 +63,23 @@ def matting_model(img_rows, img_cols, channel=3):
 
     print(model.summary())
 
-    model.compile(optimizer='adam', loss='binary_crossentropy')
+    model.compile(optimizer='adam', loss=matting_loss)
 
     return model
 
 
 if __name__ == '__main__':
     img_rows, img_cols = 224, 224
-    num_train_samples = 1595
+    num_samples = 8041
     channel = 3
     num_classes = 10
     batch_size = 16
     epochs = 10
     train_data = 'data/test'
 
-    train_data_gen = ImageDataGenerator(rotation_range=20.,
-                                        width_shift_range=0.1,
-                                        height_shift_range=0.1,
-                                        zoom_range=0.2,
-                                        horizontal_flip=True)
-    train_generator = train_data_gen.flow_from_directory(train_data, (img_cols, img_rows), batch_size=batch_size,
-                                                         class_mode=None)
+    x_train, y_train = load_data()
 
     # Load our model
-    model = matting_model(img_rows, img_cols, channel)
+    model = encoder_decoder_model(img_rows, img_cols, channel)
 
-    model.fit_generator(train_generator,
-                        steps_per_epoch=num_train_samples//batch_size,
-                        epochs=50)
+    model.fit(x_train, y_train, steps_per_epoch=num_samples // batch_size, epochs=50)
