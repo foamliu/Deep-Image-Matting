@@ -6,6 +6,7 @@ from keras.layers import Conv2D, UpSampling2D
 import keras.backend as K
 from vgg16 import vgg16_model
 
+
 def load_data():
     # (num_samples, 224, 224, 3)
     x_train = np.empty((num_samples, 224, 224, 3), dtype=np.uint8)
@@ -23,11 +24,11 @@ def load_data():
 
 def matting_loss(y_true, y_pred):
     epsilon = 1e-6
-    epsilon_sqr = epsilon**2
+    epsilon_sqr = epsilon ** 2
     return np.mean(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
 
 
-def encoder_decoder_model(img_rows, img_cols, channel=3):
+def matting_model(img_rows, img_cols, channel=3):
     model = vgg16_model(img_rows, img_cols, channel, num_classes)
 
     # dense_1 = model.get_layer('dense_1')
@@ -66,6 +67,7 @@ def encoder_decoder_model(img_rows, img_cols, channel=3):
     print(model.summary())
 
     model.compile(optimizer='adam', loss=matting_loss)
+    model.save('model.h5')
 
     return model
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
     x_train, y_train = load_data()
 
     # Load our model
-    model = encoder_decoder_model(img_rows, img_cols, channel)
+    model = matting_model(img_rows, img_cols, channel)
 
     # callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
@@ -92,7 +94,6 @@ if __name__ == '__main__':
               y_train,
               batch_size=batch_size,
               epochs=50,
-              #steps_per_epoch=num_samples // batch_size,
               callbacks=callbacks,
               verbose=1
-    )
+              )
