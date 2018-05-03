@@ -1,10 +1,10 @@
 import numpy as np
 import os
 import cv2 as cv
-from vgg16 import vgg16_model
+import keras
 from keras.layers import Conv2D, UpSampling2D
 import keras.backend as K
-
+from vgg16 import vgg16_model
 
 def load_data():
     # (num_samples, 224, 224, 3)
@@ -84,4 +84,15 @@ if __name__ == '__main__':
     # Load our model
     model = encoder_decoder_model(img_rows, img_cols, channel)
 
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=50)
+    # callbacks
+    tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
+    callbacks = [tensor_board]
+
+    model.fit(x_train,
+              y_train,
+              batch_size=batch_size,
+              epochs=50,
+              steps_per_epoch=num_samples / batch_size,
+              callbacks=callbacks,
+              verbose=1
+    )
