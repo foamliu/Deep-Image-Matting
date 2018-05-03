@@ -39,7 +39,7 @@ def load_data():
 
             i = i_train + i_valid
             if i % batch_size == 0:
-                pb.print_progress_bar((i + 1) * 100 / num_samples)
+                pb.print_progress_bar((i + 2) * 100 / num_samples)
     return x_train, y_train, x_valid, y_valid
 
 
