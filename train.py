@@ -19,7 +19,8 @@ def load_data():
         rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
         x_train[i, :, :, :] = rgb_img
         y_train[i, :, :, 0] = gray_img
-        pb.print_progress_bar((i + 1) * 100 / num_samples)
+        if i % batch_size == 0:
+            pb.print_progress_bar((i + 1) * 100 / num_samples)
     return x_train, y_train
 
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     num_samples = 8041
     channel = 3
     num_classes = 10
-    batch_size = 16
+    batch_size = 1
     epochs = 1000
     train_data = 'data/test'
     patience = 50
