@@ -2,6 +2,7 @@ import numpy as np
 import os
 import cv2 as cv
 import keras
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from matting import matting_model
 
 
@@ -26,8 +27,9 @@ if __name__ == '__main__':
     channel = 3
     num_classes = 10
     batch_size = 16
-    epochs = 10
+    epochs = 1000
     train_data = 'data/test'
+    patience = 50
 
     x_train, y_train = load_data()
 
@@ -38,7 +40,12 @@ if __name__ == '__main__':
 
     # callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
-    callbacks = [tensor_board]
+    trained_models_path = 'models/model'
+    model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
+    model_checkpoint = ModelCheckpoint(model_names, monitor='loss', verbose=1, save_best_only=True)
+    early_stop = EarlyStopping('val_acc', patience=patience)
+    reduce_lr = ReduceLROnPlateau('val_acc', factor=0.1, patience=int(patience / 4), verbose=1)
+    callbacks = [tensor_board, model_checkpoint]
 
     model.fit(x_train,
               y_train,
