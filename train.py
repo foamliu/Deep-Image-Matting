@@ -25,7 +25,7 @@ def load_data():
 def matting_loss(y_true, y_pred):
     epsilon = 1e-6
     epsilon_sqr = epsilon ** 2
-    return K.reduce_mean(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
+    return K.mean(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
 
 
 def matting_model(img_rows, img_cols, channel=3):
