@@ -59,7 +59,7 @@ def matting_model(img_rows, img_cols, channel=1, num_classes=None):
     model.add(UpSampling2D(size=(2, 2)))
     model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1_1'))
     model.add(Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1_2'))
-    model.add(Conv2D(1, (5, 5), activation='relu', padding='same', name='pred'))
+    model.add(Conv2D(1, (5, 5), activation='sigmoid', padding='same', name='pred'))
 
     # Learning rate is changed to 0.001
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)

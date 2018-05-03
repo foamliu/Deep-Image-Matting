@@ -17,8 +17,8 @@ def load_data():
         bgr_img = cv.imread(filename)
         gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
         rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
-        x_train[i, :, :, :] = rgb_img
-        y_train[i, :, :, 0] = gray_img
+        x_train[i, :, :, :] = rgb_img / 255.
+        y_train[i, :, :, 0] = gray_img / 255.
         if i % batch_size == 0:
             pb.print_progress_bar((i + 1) * 100 / num_samples)
     return x_train, y_train
