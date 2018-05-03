@@ -9,19 +9,37 @@ from console_progressbar import ProgressBar
 
 def load_data():
     # (num_samples, 224, 224, 3)
+    num_samples = 8146
+    train_split = 0.8
+    num_train = int(round(num_samples * train_split))
+    num_valid = num_samples - num_train
     pb = ProgressBar(total=100, prefix='Loading data', suffix='', decimals=3, length=50, fill='=')
-    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.float32)
-    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.float32)
-    for i in range(num_samples):
-        filename = os.path.join('data/test', '%05d.jpg' % (i + 1))
-        bgr_img = cv.imread(filename)
-        gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
-        rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
-        x_train[i, :, :, :] = rgb_img / 255.
-        y_train[i, :, :, 0] = gray_img / 255.
-        if i % batch_size == 0:
-            pb.print_progress_bar((i + 1) * 100 / num_samples)
-    return x_train, y_train
+
+    x_train = np.empty((num_train, 224, 224, 3), dtype=np.float32)
+    y_train = np.empty((num_train, 224, 224, 1), dtype=np.float32)
+    x_valid = np.empty((num_valid, 224, 224, 3), dtype=np.float32)
+    y_valid = np.empty((num_valid, 224, 224, 1), dtype=np.float32)
+
+    i_train = i_valid = 0
+    for root, dirs, files in os.walk("data", topdown=False):
+        for name in files:
+            filename = os.path.join(root, name)
+            bgr_img = cv.imread(filename)
+            gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
+            rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
+            if (filename.startswith('data/train')):
+                x_train[i_train, :, :, :] = rgb_img / 255.
+                y_train[i_train, :, :, 0] = gray_img / 255.
+                i_train += 1
+            else:
+                x_valid[i_valid, :, :, :] = rgb_img / 255.
+                y_valid[i_valid, :, :, 0] = gray_img / 255.
+                i_valid += 1
+
+            i = i_train + i_valid
+            if i % batch_size == 0:
+                pb.print_progress_bar((i + 1) * 100 / num_samples)
+    return x_train, y_train, x_valid, y_valid
 
 
 if __name__ == '__main__':
@@ -34,7 +52,7 @@ if __name__ == '__main__':
     train_data = 'data/test'
     patience = 50
 
-    x_train, y_train = load_data()
+    x_train, y_train, x_valid, y_valid = load_data()
 
     # Load our model
     model = matting_model(img_rows, img_cols, channel)
@@ -48,10 +66,11 @@ if __name__ == '__main__':
     model_checkpoint = ModelCheckpoint(model_names, monitor='loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('loss', factor=0.1, patience=int(patience / 4), verbose=1)
-    callbacks = [tensor_board, model_checkpoint]
+    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     model.fit(x_train,
               y_train,
+              validation_data=(x_valid, y_valid),
               batch_size=batch_size,
               epochs=50,
               callbacks=callbacks,

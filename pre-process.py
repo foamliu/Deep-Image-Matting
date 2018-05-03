@@ -6,6 +6,7 @@ import numpy as np
 import os
 import cv2 as cv
 import shutil
+import random
 from console_progressbar import ProgressBar
 
 
@@ -16,8 +17,13 @@ def ensure_folder(folder):
 
 def save_data(usage, fnames, bboxes):
     src_folder = 'cars_{}'.format(usage)
-    dst_folder = 'data/{}'.format(usage)
+    # dst_folder = 'data/{}'.format(usage)
     num_samples = len(fnames)
+
+    train_split = 0.8
+    num_train = int(round(num_samples * train_split))
+    train_indexes = random.sample(range(num_samples), num_train)
+    print('train_indexes: '.format(str(train_indexes)))
 
     pb = ProgressBar(total=100, prefix='Save {} data'.format(usage), suffix='', decimals=3, length=50, fill='=')
 
@@ -34,8 +40,13 @@ def save_data(usage, fnames, bboxes):
         x2 = min(x2 + margin, width)
         y2 = min(y2 + margin, height)
         # print(fname)
-        pb.print_progress_bar((i + 1) * 100 / num_samples)
+        if i%16==0:
+            pb.print_progress_bar((i + 1) * 100 / num_samples)
 
+        if i in train_indexes:
+            dst_folder = 'data/train'
+        else:
+            dst_folder = 'data/valid'
         dst_path = os.path.join(dst_folder, fname)
         crop_image = src_image[y1:y2, x1:x2]
         dst_img = cv.resize(src=crop_image, dsize=(img_height, img_width))
@@ -67,27 +78,6 @@ def process_data(usage):
     save_data(usage, fnames, bboxes)
 
 
-def process_test_data():
-    print("Processing test data...")
-    cars_annos = scipy.io.loadmat('devkit/cars_test_annos')
-    annotations = cars_annos['annotations']
-    annotations = np.transpose(annotations)
-
-    fnames = []
-    bboxes = []
-
-    for annotation in annotations:
-        bbox_x1 = annotation[0][0][0][0]
-        bbox_y1 = annotation[0][1][0][0]
-        bbox_x2 = annotation[0][2][0][0]
-        bbox_y2 = annotation[0][3][0][0]
-        fname = annotation[0][4][0]
-        bboxes.append((bbox_x1, bbox_y1, bbox_x2, bbox_y2))
-        fnames.append(fname)
-
-    save_data(fnames, bboxes)
-
-
 if __name__ == '__main__':
     # parameters
     img_width, img_height = 224, 224
@@ -112,6 +102,7 @@ if __name__ == '__main__':
     print('Sample class_name: [{}]'.format(class_names[8][0][0]))
 
     ensure_folder('data/train')
+    ensure_folder('data/valid')
     # ensure_folder('data/test')
 
     process_data('train')
