@@ -8,16 +8,15 @@ from matting import matting_model
 
 def load_data():
     # (num_samples, 224, 224, 3)
-    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.uint8)
-    y_train = np.empty((num_samples, 224, 224), dtype=np.uint8)
+    x_train = np.empty((num_samples, 224, 224, 3), dtype=np.int32)
+    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.int32)
     for i in range(num_samples):
         filename = os.path.join('data/test', '%05d.jpg' % (i + 1))
         bgr_img = cv.imread(filename)
         gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
         rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
         x_train[i, :, :, :] = rgb_img
-        y_train[i, :, :] = gray_img
-    y_train = np.reshape(y_train, (num_samples, 224, 224, 1))
+        y_train[i, :, :, 0] = gray_img
     return x_train, y_train
 
 
