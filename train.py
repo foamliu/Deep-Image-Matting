@@ -26,8 +26,7 @@ def load_data():
 
 if __name__ == '__main__':
     img_rows, img_cols = 224, 224
-    #num_samples = 8041
-    num_samples = 256
+    num_samples = 8041
     channel = 3
     num_classes = 10
     batch_size = 16
