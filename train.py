@@ -3,7 +3,8 @@ import os
 import cv2 as cv
 import keras
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from matting import matting_model
+import matting
+import transfer
 from console_progressbar import ProgressBar
 
 
@@ -52,14 +53,20 @@ if __name__ == '__main__':
     train_data = 'data/test'
     patience = 50
 
-    x_train, y_train, x_valid, y_valid = load_data()
-
     # Load our model
-    model = matting_model(img_rows, img_cols, channel)
-    model.load_weights('model_weights.h5')
+    model_path = 'model_weights.h5'
+    if os.path.exists(model_path):
+        model = matting.matting_model(img_rows, img_cols, channel)
+        model.load_weights(model_path)
+    else:
+        model = transfer.matting_model(img_rows, img_cols, channel)
+
     print(model.summary())
 
-    # callbacks
+    # Load our data
+    x_train, y_train, x_valid, y_valid = load_data()
+
+    # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     trained_models_path = 'models/model'
     model_names = trained_models_path + '.{epoch:02d}-{loss:.2f}.hdf5'
@@ -68,6 +75,7 @@ if __name__ == '__main__':
     reduce_lr = ReduceLROnPlateau('loss', factor=0.1, patience=int(patience / 4), verbose=1)
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
+    # Start Fine-tuning
     model.fit(x_train,
               y_train,
               validation_data=(x_valid, y_valid),

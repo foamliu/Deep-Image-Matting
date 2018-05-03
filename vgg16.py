@@ -81,11 +81,13 @@ def vgg16_model(img_rows, img_cols, channel=1, num_classes=None):
         # Use pre-trained weights for Tensorflow backend
         weights_path = 'models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
+    model.load_weights(weights_path)
+
     # Truncate and replace softmax layer for transfer learning
-    model.layers.pop()
-    model.outputs = [model.layers[-1].output]
-    model.layers[-1].outbound_nodes = []
-    model.add(Dense(num_classes, activation='softmax'))
+    # model.layers.pop()
+    # model.outputs = [model.layers[-1].output]
+    # model.layers[-1].outbound_nodes = []
+    # model.add(Dense(num_classes, activation='softmax'))
 
     # Learning rate is changed to 0.001
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)

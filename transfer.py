@@ -1,14 +1,11 @@
 from vgg16 import vgg16_model
 from keras.layers import Conv2D, UpSampling2D
+from keras.optimizers import SGD
 from utils import matting_loss
 
 
 def matting_model(img_rows, img_cols, channel=3):
     model = vgg16_model(img_rows, img_cols, channel)
-
-    # dense_1 = model.get_layer('dense_1')
-    # flatten_1 = model.get_layer('flatten_1')
-
     model.layers.pop()  # dense_4
     model.layers.pop()  # dropout_2
     model.layers.pop()  # dense_2
@@ -41,7 +38,8 @@ def matting_model(img_rows, img_cols, channel=3):
 
     print(model.summary())
 
-    model.compile(optimizer='adam', loss=matting_loss)
+    sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(optimizer=sgd, loss=matting_loss)
     return model
 
 
