@@ -3,33 +3,35 @@ import os
 import cv2 as cv
 from vgg16 import vgg16_model
 from keras.layers import Conv2D, UpSampling2D
+import keras.backend as K
 
 
 def load_data():
     # (num_samples, 224, 224, 3)
     x_train = np.empty((num_samples, 224, 224, 3), dtype=np.uint8)
-    y_train = np.empty((num_samples, 224, 224, 1), dtype=np.uint8)
+    y_train = np.empty((num_samples, 224, 224), dtype=np.uint8)
     for i in range(num_samples):
-        filename = os.path.join('data/test', '%05d' % (i + 1))
+        filename = os.path.join('data/test', '%05d.jpg' % (i + 1))
         bgr_img = cv.imread(filename)
         gray_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
         rgb_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2RGB)
         x_train[i, :, :, :] = rgb_img
-        y_train[i, :, :, :] = gray_img
+        y_train[i, :, :] = gray_img
+    y_train = np.reshape(y_train, (num_samples, 224, 224, 1))
     return x_train, y_train
 
 
 def matting_loss(y_true, y_pred):
     epsilon = 1e-6
     epsilon_sqr = epsilon**2
-    return np.sum(np.sqrt(np.power((y_true - y_pred), 2) + epsilon_sqr))
+    return K.sum(K.sqrt(K.square(y_true - y_pred) + epsilon_sqr))
 
 
 def encoder_decoder_model(img_rows, img_cols, channel=3):
     model = vgg16_model(img_rows, img_cols, channel, num_classes)
 
-    dense_1 = model.get_layer('dense_1')
-    flatten_1 = model.get_layer('flatten_1')
+    # dense_1 = model.get_layer('dense_1')
+    # flatten_1 = model.get_layer('flatten_1')
 
     model.layers.pop()  # dense_4
     model.layers.pop()  # dropout_2
