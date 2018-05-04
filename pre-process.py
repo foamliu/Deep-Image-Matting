@@ -40,7 +40,7 @@ def save_data(usage, fnames, bboxes):
         x2 = min(x2 + margin, width)
         y2 = min(y2 + margin, height)
         # print(fname)
-        if i%16==0:
+        if i % 16 == 0:
             pb.print_progress_bar((i + 1) * 100 / num_samples)
 
         if i in train_indexes:
