@@ -80,7 +80,7 @@ if __name__ == '__main__':
               y_train,
               validation_data=(x_valid, y_valid),
               batch_size=batch_size,
-              epochs=50,
+              epochs=epochs,
               callbacks=callbacks,
               verbose=1
               )
