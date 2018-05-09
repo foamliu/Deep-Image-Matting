@@ -17,7 +17,7 @@ def autoencoder(img_rows, img_cols, channel=4):
 
 
 if __name__ == '__main__':
-    model = autoencoder(224, 224, 4)
+    model = autoencoder(320, 320, 4)
     input_layer = model.get_layer('input')
 
     K.clear_session()

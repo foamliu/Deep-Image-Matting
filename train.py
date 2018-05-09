@@ -8,7 +8,7 @@ from utils import load_data
 
 
 if __name__ == '__main__':
-    img_rows, img_cols = 224, 224
+    img_rows, img_cols = 320, 320
     channel = 4
     batch_size = 16
     epochs = 1000
