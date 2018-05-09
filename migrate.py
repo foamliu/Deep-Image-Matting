@@ -3,7 +3,7 @@ import numpy as np
 from keras.layers import Conv2D
 
 import new_start
-from utils import compile
+from utils import do_compile
 from vgg16 import vgg16_model
 
 
@@ -42,7 +42,7 @@ def migrate_model(img_rows, img_cols, channel=4):
     # new_conv6.set_weights([new_W, b])
 
     del old_model
-    compile(new_model)
+    do_compile(new_model)
     return new_model
 
 

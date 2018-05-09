@@ -11,6 +11,7 @@ def autoencoder(img_rows, img_cols, channel=4):
     build_encoder(model, img_rows, img_cols, channel)
     # Decoder
     build_decoder(model)
+    # Compile
     do_compile(model)
     return model
 
