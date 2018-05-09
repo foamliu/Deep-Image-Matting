@@ -1,1 +1,6 @@
 .idea/
+Adobe_Deep_Matting_Dataset.zip
+Combined_Dataset/
+__pycache__/
+custom_layers/__pycache__/
+models/
