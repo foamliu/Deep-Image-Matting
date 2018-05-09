@@ -3,7 +3,7 @@
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
-from utils import build_encoder
+from encoder_decoder import build_encoder
 
 
 def vgg16_model(img_rows, img_cols, channel=3):
