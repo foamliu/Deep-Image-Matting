@@ -4,3 +4,4 @@ Combined_Dataset/
 __pycache__/
 custom_layers/__pycache__/
 models/
+train2014.zip
