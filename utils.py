@@ -30,12 +30,17 @@ def generate_trimap(alpha):
     return np.array(trimap).astype(np.uint8)
 
 
-def load_data():
+def data_gen(usage):
     pass
 
 
+def train_gen():
+    data_gen('train')
+
+
+def valid_gen():
+    data_gen('valid')
+
+
 if __name__ == '__main__':
-    alpha = cv.imread('mask/035A4301.jpg', 0)
-    trimap = generate_trimap(alpha)
-    cv.imshow('trimap', trimap)
-    cv.waitKey(0)
+    pass

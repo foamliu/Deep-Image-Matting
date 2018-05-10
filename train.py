@@ -4,7 +4,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
 import new_start
 import migrate
-from utils import load_data
+from utils import train_gen, valid_gen
 
 
 if __name__ == '__main__':
@@ -13,6 +13,9 @@ if __name__ == '__main__':
     batch_size = 16
     epochs = 1000
     patience = 50
+    num_samples = 43100
+    num_train_samples = 34480
+    num_valid_samples = 8620    # num_samples - num_train_samples
 
     # Load our model
     model_path = 'models/model_weights.h5'
@@ -24,9 +27,6 @@ if __name__ == '__main__':
 
     print(model.summary())
 
-    # Load our data
-    x_train, y_train, x_valid, y_valid = load_data()
-
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     trained_models_path = 'models/model'
@@ -37,11 +37,11 @@ if __name__ == '__main__':
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     # Start Fine-tuning
-    model.fit(x_train,
-              y_train,
-              validation_data=(x_valid, y_valid),
-              batch_size=batch_size,
-              epochs=epochs,
-              callbacks=callbacks,
-              verbose=1
-              )
+    model.fit_generator(train_gen(),
+                        steps_per_epoch=num_train_samples // batch_size,
+                        validation_data=valid_gen(),
+                        validation_steps=num_valid_samples / batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        callbacks=callbacks
+                        )
