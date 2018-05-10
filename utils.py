@@ -55,6 +55,15 @@ def get_crop_top_left(trimap):
     return x, y
 
 
+def ensure_size(matrix, channel):
+    h, w = matrix.shape[:2]
+    if h >= 320 and w >= 320:
+        return matrix
+    ret = np.zeros((320, 320, channel), dtype=np.float32)
+    ret[0:h, 0:w] = matrix[:, :]
+    return ret
+
+
 def data_gen(usage):
     filename = '{}_names.txt'.format(usage)
     with open(filename, 'r') as f:
@@ -77,8 +86,11 @@ def data_gen(usage):
             trimap = generate_trimap(alpha)
             x, y = get_crop_top_left(trimap)
             bgr_img = bgr_img[y:y + 320, x:x + 320]
+            bgr_img = ensure_size(bgr_img, 3)
             trimap = trimap[y:y + 320, x:x + 320]
+            trimap = ensure_size(trimap, 1)
             alpha = alpha[y:y + 320, x:x + 320]
+            alpha = ensure_size(alpha, 1)
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
