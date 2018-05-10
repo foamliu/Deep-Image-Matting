@@ -2,7 +2,9 @@ import keras.backend as K
 import random
 import numpy as np
 import cv2 as cv
-kernel = np.ones((5,5),np.uint8)
+
+kernel = np.ones((3, 3), np.uint8)
+
 
 # simple alpha prediction loss
 def custom_loss(y_true, y_pred):
@@ -19,10 +21,10 @@ def do_compile(model):
 
 def generate_trimap(alpha):
     iter = random.randint(1, 20)
-    a = np.sign(alpha) * 255
-    dilation = cv.dilate(a, kernel, iterations=iter)
-    trimap = np.sign(dilation - a) * 128 + a
-    return trimap
+    alpha[alpha != 255] = 0
+    dilation = cv.dilate(alpha, kernel, iterations=iter)
+    trimap = (dilation-alpha) * 0.5 + alpha
+    return np.array(trimap).astype(np.uint8)
 
 
 def load_data():
@@ -32,6 +34,5 @@ def load_data():
 if __name__ == '__main__':
     alpha = cv.imread('mask/1-1252426161dfXY.jpg', 0)
     trimap = generate_trimap(alpha)
-    cv.imshow(trimap)
+    cv.imshow('trimap', trimap)
     cv.waitKey(0)
-
