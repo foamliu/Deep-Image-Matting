@@ -21,9 +21,12 @@ def do_compile(model):
 
 def generate_trimap(alpha):
     iter = random.randint(1, 20)
-    alpha[alpha != 255] = 0
-    dilation = cv.dilate(alpha, kernel, iterations=iter)
-    trimap = (dilation - alpha) * 0.5 + alpha
+    fg = alpha.copy()
+    fg[alpha != 255] = 0
+    unknown = alpha.copy()
+    unknown[alpha != 0] = 255
+    unknown = cv.dilate(unknown, kernel, iterations=iter)
+    trimap = np.sign(unknown - fg) * 128 + fg
     return np.array(trimap).astype(np.uint8)
 
 
@@ -32,7 +35,7 @@ def load_data():
 
 
 if __name__ == '__main__':
-    alpha = cv.imread('mask/1-1252426161dfXY.jpg', 0)
+    alpha = cv.imread('mask/035A4301.jpg', 0)
     trimap = generate_trimap(alpha)
     cv.imshow('trimap', trimap)
     cv.waitKey(0)
