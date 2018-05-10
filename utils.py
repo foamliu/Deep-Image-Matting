@@ -45,7 +45,7 @@ def get_crop_top_left(trimap):
     while True:
         x = random.randint(0, w - 320)
         y = random.randint(0, h - 320)
-        if trimap[y, x] == 128:
+        if trimap[y + 160, x + 160] == 128:
             return x, y
 
 
@@ -62,6 +62,7 @@ def data_gen(usage):
         for i_batch in range(batch_size):
             name = names[i]
             filename = os.path.join('merged', name)
+            print(filename)
             bgr_img = cv.imread(filename)
             bg_h, bg_w = bgr_img.shape[:2]
             a = get_alpha(name)
@@ -85,11 +86,11 @@ def data_gen(usage):
 
 
 def train_gen():
-    data_gen('train')
+    return data_gen('train')
 
 
 def valid_gen():
-    data_gen('valid')
+    return data_gen('valid')
 
 
 if __name__ == '__main__':
