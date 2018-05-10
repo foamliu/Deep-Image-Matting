@@ -52,7 +52,7 @@ def get_crop_top_left(trimap):
 def data_gen(usage):
     filename = '{}_names.txt'.format(usage)
     with open(filename, 'r') as f:
-        names = f.readlines()
+        names = f.read().splitlines()
     batch_size = 16
     i = 0
     while True:
@@ -62,7 +62,6 @@ def data_gen(usage):
         for i_batch in range(batch_size):
             name = names[i]
             filename = os.path.join('merged', name)
-            print(filename)
             bgr_img = cv.imread(filename)
             bg_h, bg_w = bgr_img.shape[:2]
             a = get_alpha(name)
@@ -72,8 +71,8 @@ def data_gen(usage):
             trimap = generate_trimap(alpha)
             x, y = get_crop_top_left(trimap)
             bgr_img = bgr_img[y:y + 320, x:x + 320]
+            trimap = trimap[y:y + 320, x:x + 320]
             alpha = alpha[y:y + 320, x:x + 320]
-            bgr_img = bgr_img[y:y + 320, x:x + 320]
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
@@ -94,4 +93,7 @@ def valid_gen():
 
 
 if __name__ == '__main__':
-    pass
+    filename = 'merged/19_1926.png'
+    bgr_img = cv.imread(filename)
+    bg_h, bg_w = bgr_img.shape[:2]
+
