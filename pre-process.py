@@ -3,6 +3,7 @@
 import zipfile
 import os
 import shutil
+from Combined_Dataset.Training_set.Composition_code_revised import do_composite
 
 if __name__ == '__main__':
     if not os.path.exists('Combined_Dataset'):
@@ -65,5 +66,5 @@ if __name__ == '__main__':
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
-    import Combined_Dataset.Training_set.Composition_code
+    do_composite()
 

@@ -4,9 +4,11 @@ Combined_Dataset/
 __pycache__/
 custom_layers/__pycache__/
 models/
-train2014.zip
 train2014/
 bg/
 fg/
 mask/
 merged/
+train2014.zip
+Deep-Image-Matting.7z
+matting_evaluation.zip
