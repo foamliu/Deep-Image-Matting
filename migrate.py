@@ -8,7 +8,7 @@ from vgg16 import vgg16_model
 
 
 def migrate_model(img_rows, img_cols, channel=4):
-    old_model = vgg16_model(img_rows, img_cols, 3)
+    old_model = vgg16_model(224, 224, 3)
     #print(old_model.summary())
     old_layers = [l for l in old_model.layers]
     new_model = new_start.autoencoder(img_rows, img_cols, 4)
