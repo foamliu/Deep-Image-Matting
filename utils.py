@@ -59,8 +59,13 @@ def ensure_size(matrix, channel):
     h, w = matrix.shape[:2]
     if h >= 320 and w >= 320:
         return matrix
-    ret = np.zeros((320, 320, channel), dtype=np.float32)
-    ret[0:h, 0:w] = matrix[:, :]
+
+    if channel > 1:
+        ret = np.zeros((320, 320, channel), dtype=np.float32)
+        ret[0:h, 0:w, :] = matrix[:, :, :]
+    else:
+        ret = np.zeros((320, 320), dtype=np.float32)
+        ret[0:h, 0:w] = matrix[:, :]
     return ret
 
 
@@ -115,4 +120,3 @@ if __name__ == '__main__':
     bgr_img = cv.imread(filename)
     bg_h, bg_w = bgr_img.shape[:2]
     print(bg_w, bg_h)
-
