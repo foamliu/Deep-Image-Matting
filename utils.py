@@ -43,8 +43,8 @@ def generate_trimap(alpha):
 def get_crop_top_left(trimap):
     h, w = trimap.shape[:2]
     while True:
-        x = random.randint(0, w-320)
-        y = random.randint(0, h-320)
+        x = random.randint(0, w - 320)
+        y = random.randint(0, h - 320)
         if trimap[y, x] == 128:
             return x, y
 
@@ -70,7 +70,7 @@ def data_gen(usage):
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
             x, y = get_crop_top_left(trimap)
-            bgr_img = bgr_img[y:y+320, x:x+320]
+            bgr_img = bgr_img[y:y + 320, x:x + 320]
             alpha = alpha[y:y + 320, x:x + 320]
             bgr_img = bgr_img[y:y + 320, x:x + 320]
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
