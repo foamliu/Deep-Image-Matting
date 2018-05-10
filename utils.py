@@ -1,9 +1,13 @@
-import keras.backend as K
+import os
 import random
-import numpy as np
+
 import cv2 as cv
+import keras.backend as K
+import numpy as np
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
+with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
+    fg_files = f.read().splitlines()
 
 
 # simple alpha prediction loss
@@ -19,6 +23,12 @@ def do_compile(model):
     return model
 
 
+def get_alpha(name):
+    fg_i = int(name.split("_")[0])
+    alpha = cv.imread(fg_files[fg_i], 0)
+    return alpha
+
+
 def generate_trimap(alpha):
     iter = random.randint(1, 20)
     fg = alpha.copy()
@@ -30,8 +40,48 @@ def generate_trimap(alpha):
     return np.array(trimap).astype(np.uint8)
 
 
+def get_crop_top_left(trimap):
+    h, w = trimap.shape[:2]
+    while True:
+        x = random.randint(0, w-320)
+        y = random.randint(0, h-320)
+        if trimap[y, x] == 128:
+            return x, y
+
+
 def data_gen(usage):
-    pass
+    filename = '{}_names.txt'.format(usage)
+    with open(filename, 'r') as f:
+        names = f.readlines()
+    batch_size = 16
+    i = 0
+    while True:
+        batch_x = np.empty((batch_size, 320, 320, 4), dtype=np.float32)
+        batch_y = np.empty((batch_size, 320, 320, 1), dtype=np.float32)
+
+        for i_batch in range(batch_size):
+            name = names[i]
+            filename = os.path.join('merged', name)
+            bgr_img = cv.imread(filename)
+            bg_h, bg_w = bgr_img.shape[:2]
+            a = get_alpha(name)
+            a_h, a_w = a.shape[:2]
+            alpha = np.zeros((bg_h, bg_w), np.float32)
+            alpha[0:a_h, 0:a_w] = a
+            trimap = generate_trimap(alpha)
+            x, y = get_crop_top_left(trimap)
+            bgr_img = bgr_img[y:y+320, x:x+320]
+            alpha = alpha[y:y + 320, x:x + 320]
+            bgr_img = bgr_img[y:y + 320, x:x + 320]
+            batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
+            batch_x[i_batch, :, :, 3] = trimap / 255.
+            batch_y[i_batch, :, :, 0] = alpha / 255.
+
+            i += 1
+            if i >= len(names):
+                i = 0
+
+        yield batch_x, batch_y
 
 
 def train_gen():
