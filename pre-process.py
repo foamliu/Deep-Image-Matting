@@ -46,25 +46,26 @@ if __name__ == '__main__':
     if not os.path.exists(fg_path):
         os.makedirs(fg_path)
 
-        old_folder = os.path.join(train_folder, 'Adobe-licensed images/fg')
-        fg_files = os.listdir(old_folder)
-        for fg_file in fg_files:
-            src_path = os.path.join(old_folder, fg_file)
-            dest_path = os.path.join(fg_path, fg_file)
-            shutil.move(src_path, dest_path)
+        for old_folder in [train_folder + 'Adobe-licensed images/fg', train_folder + 'Other/fg']:
+            old_folder = os.path.join()
+            fg_files = os.listdir(old_folder)
+            for fg_file in fg_files:
+                src_path = os.path.join(old_folder, fg_file)
+                dest_path = os.path.join(fg_path, fg_file)
+                shutil.move(src_path, dest_path)
 
     if not os.path.exists(a_path):
         os.makedirs(a_path)
 
-        old_folder = os.path.join(train_folder, 'Adobe-licensed images/alpha')
-        a_files = os.listdir(old_folder)
-        for a_file in a_files:
-            src_path = os.path.join(old_folder, a_file)
-            dest_path = os.path.join(a_path, a_file)
-            shutil.move(src_path, dest_path)
+        for old_folder in [train_folder + 'Adobe-licensed images/alpha', train_folder + 'Other/alpha']:
+            old_folder = os.path.join(train_folder, 'Adobe-licensed images/alpha')
+            a_files = os.listdir(old_folder)
+            for a_file in a_files:
+                src_path = os.path.join(old_folder, a_file)
+                dest_path = os.path.join(a_path, a_file)
+                shutil.move(src_path, dest_path)
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
     do_composite()
-

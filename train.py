@@ -37,7 +37,7 @@ if __name__ == '__main__':
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     # Start Fine-tuning
-    model.fit(x_train,
+    model.fit_generator(x_train,
               y_train,
               validation_data=(x_valid, y_valid),
               batch_size=batch_size,
