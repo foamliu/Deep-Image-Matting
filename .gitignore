@@ -5,6 +5,7 @@ __pycache__/
 custom_layers/__pycache__/
 models/
 train2014/
+logs/
 bg/
 fg/
 mask/

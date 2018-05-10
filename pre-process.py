@@ -6,26 +6,6 @@ import shutil
 from Combined_Dataset.Training_set.Composition_code_revised import do_composite
 
 if __name__ == '__main__':
-    if not os.path.exists('Combined_Dataset'):
-        zip_file = 'Adobe_Deep_Matting_Dataset.zip'
-        print('Extracting {}...'.format(zip_file))
-
-        zip_ref = zipfile.ZipFile(zip_file, 'r')
-        zip_ref.extractall('.')
-        zip_ref.close()
-
-    if not os.path.exists('train2014'):
-        zip_file = 'train2014.zip'
-        print('Extracting {}...'.format(zip_file))
-
-        zip_ref = zipfile.ZipFile(zip_file, 'r')
-        zip_ref.extractall('.')
-        zip_ref.close()
-
-    training_bg_names = []
-    with open('Combined_Dataset/Training_set/training_bg_names.txt') as f:
-        training_bg_names = f.read().splitlines()
-
     # path to provided foreground images
     fg_path = 'fg/'
     # path to provided alpha mattes
@@ -36,7 +16,27 @@ if __name__ == '__main__':
     out_path = 'merged/'
 
     train_folder = 'Combined_Dataset/Training_set/'
-    if not os.path.exists(bg_path):
+
+    if not os.path.exists('Combined_Dataset'):
+        zip_file = 'Adobe_Deep_Matting_Dataset.zip'
+        print('Extracting {}...'.format(zip_file))
+
+        zip_ref = zipfile.ZipFile(zip_file, 'r')
+        zip_ref.extractall('.')
+        zip_ref.close()
+
+    if not os.path.exists('bg'):
+        zip_file = 'train2014.zip'
+        print('Extracting {}...'.format(zip_file))
+
+        zip_ref = zipfile.ZipFile(zip_file, 'r')
+        zip_ref.extractall('.')
+        zip_ref.close()
+
+        training_bg_names = []
+        with open('Combined_Dataset/Training_set/training_bg_names.txt') as f:
+            training_bg_names = f.read().splitlines()
+
         os.makedirs(bg_path)
         for bg_name in training_bg_names:
             src_path = os.path.join('train2014', bg_name)
