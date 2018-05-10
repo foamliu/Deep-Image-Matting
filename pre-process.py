@@ -47,7 +47,6 @@ if __name__ == '__main__':
         os.makedirs(fg_path)
 
         for old_folder in [train_folder + 'Adobe-licensed images/fg', train_folder + 'Other/fg']:
-            old_folder = os.path.join()
             fg_files = os.listdir(old_folder)
             for fg_file in fg_files:
                 src_path = os.path.join(old_folder, fg_file)
@@ -58,7 +57,6 @@ if __name__ == '__main__':
         os.makedirs(a_path)
 
         for old_folder in [train_folder + 'Adobe-licensed images/alpha', train_folder + 'Other/alpha']:
-            old_folder = os.path.join(train_folder, 'Adobe-licensed images/alpha')
             a_files = os.listdir(old_folder)
             for a_file in a_files:
                 src_path = os.path.join(old_folder, a_file)
