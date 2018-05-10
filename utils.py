@@ -85,11 +85,11 @@ def data_gen(usage):
 
 
 def train_gen():
-    data_gen('train')
+    return data_gen('train')
 
 
 def valid_gen():
-    data_gen('valid')
+    return data_gen('valid')
 
 
 if __name__ == '__main__':
