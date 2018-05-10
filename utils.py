@@ -25,7 +25,9 @@ def do_compile(model):
 
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
-    alpha = cv.imread(fg_files[fg_i], 0)
+    name = fg_files[fg_i]
+    filename = os.path.join('mask', name)
+    alpha = cv.imread(filename, 0)
     return alpha
 
 
