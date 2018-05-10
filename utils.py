@@ -3,7 +3,7 @@ import random
 import numpy as np
 import cv2 as cv
 
-kernel = np.ones((3, 3), np.uint8)
+kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
 
 
 # simple alpha prediction loss
@@ -23,7 +23,7 @@ def generate_trimap(alpha):
     iter = random.randint(1, 20)
     alpha[alpha != 255] = 0
     dilation = cv.dilate(alpha, kernel, iterations=iter)
-    trimap = (dilation-alpha) * 0.5 + alpha
+    trimap = (dilation - alpha) * 0.5 + alpha
     return np.array(trimap).astype(np.uint8)
 
 
