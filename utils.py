@@ -43,12 +43,16 @@ def generate_trimap(alpha):
 
 
 def get_crop_top_left(trimap):
-    w, h = trimap.shape[:2]
-    while True:
-        x = random.randint(0, w - 320)
-        y = random.randint(0, h - 320)
+    h, w = trimap.shape[:2]
+    x, y = 0, 0
+    for i in range(10):
+        if x > 320:
+            x = random.randint(0, w - 320)
+        if y > 320:
+            y = random.randint(0, h - 320)
         if trimap[y + 160, x + 160] == 128:
-            return x, y
+            break
+    return x, y
 
 
 def data_gen(usage):
@@ -65,9 +69,9 @@ def data_gen(usage):
             name = names[i]
             filename = os.path.join('merged', name)
             bgr_img = cv.imread(filename)
-            bg_w, bg_h = bgr_img.shape[:2]
+            bg_h, bg_w = bgr_img.shape[:2]
             a = get_alpha(name)
-            a_w, a_h = a.shape[:2]
+            a_h, a_w = a.shape[:2]
             alpha = np.zeros((bg_h, bg_w), np.float32)
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
@@ -95,8 +99,8 @@ def valid_gen():
 
 
 if __name__ == '__main__':
-    filename = 'merged/19_1926.png'
+    filename = 'merged/357_35748.png'
     bgr_img = cv.imread(filename)
-    bg_w, bg_h = bgr_img.shape[:2]
+    bg_h, bg_w = bgr_img.shape[:2]
     print(bg_w, bg_h)
 
