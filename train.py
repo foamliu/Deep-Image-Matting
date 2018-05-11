@@ -42,6 +42,5 @@ if __name__ == '__main__':
                         validation_data=valid_gen(),
                         validation_steps=num_valid_samples / batch_size,
                         epochs=epochs,
-                        verbose=1,
-                        callbacks=callbacks
+                        verbose=1
                         )
