@@ -42,7 +42,7 @@ def migrate_model(img_rows, img_cols, channel=4):
     # new_conv6.set_weights([new_W, b])
 
     del old_model
-    do_compile(new_model)
+    new_model = do_compile(new_model)
     return new_model
 
 

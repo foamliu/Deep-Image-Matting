@@ -12,7 +12,7 @@ def autoencoder(img_rows, img_cols, channel=4):
     # Decoder
     build_decoder(model)
     # Compile
-    do_compile(model)
+    model = do_compile(model)
     return model
 
 
