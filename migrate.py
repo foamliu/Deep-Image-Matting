@@ -1,13 +1,15 @@
 import keras.backend as K
 import numpy as np
 from keras.layers import Conv2D
-
+from keras.utils.training_utils import multi_gpu_model
+import tensorflow as tf
 import new_start
 from utils import do_compile
 from vgg16 import vgg16_model
+from utils import get_available_gpus
 
 
-def migrate_model(img_rows, img_cols, channel=4):
+def do_migrate_model(img_rows, img_cols, channel=4):
     old_model = vgg16_model(224, 224, 3)
     #print(old_model.summary())
     old_layers = [l for l in old_model.layers]
@@ -42,6 +44,20 @@ def migrate_model(img_rows, img_cols, channel=4):
     # new_conv6.set_weights([new_W, b])
 
     del old_model
+
+    return new_model
+
+
+def migrate_model(img_rows, img_cols, channel=4):
+    num_gpu = len(get_available_gpus())
+    if num_gpu >= 2:
+        with tf.device("/cpu:0"):
+            print("Training with {} GPUs...".format(num_gpu))
+            new_model = do_migrate_model(img_rows, img_cols, channel)
+            new_model = multi_gpu_model(new_model, gpus=num_gpu)
+    else:
+        new_model = do_migrate_model(img_rows, img_cols, channel)
+
     new_model = do_compile(new_model)
     return new_model
 

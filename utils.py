@@ -4,7 +4,6 @@ import random
 import cv2 as cv
 import keras.backend as K
 import numpy as np
-from keras.utils.training_utils import multi_gpu_model
 from tensorflow.python.client import device_lib
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
@@ -26,16 +25,9 @@ def get_available_gpus():
 
 
 def do_compile(model):
-    num_gpu = len(get_available_gpus())
-    if num_gpu >= 2:
-        print("Training with {} GPUs...".format(num_gpu))
-        parallel_model = multi_gpu_model(model, gpus=num_gpu)
-        parallel_model.compile(optimizer='nadam', loss=custom_loss)
-        return parallel_model
-    else:
-        # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.99, nesterov=True)
-        model.compile(optimizer='nadam', loss=custom_loss)
-        return model
+    # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.99, nesterov=True)
+    model.compile(optimizer='nadam', loss=custom_loss)
+    return model
 
 
 def get_alpha(name):
