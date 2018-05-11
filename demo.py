@@ -7,12 +7,14 @@ import numpy as np
 
 from data_generator import generate_trimap, get_crop_top_left, get_alpha
 from new_start import autoencoder
+from trimap_dict import trimap_init
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
+    trimap_init()
 
-    model_weights_path = 'models/model.06-0.02.hdf5'
+    model_weights_path = 'models/model.22-0.01.hdf5'
     model = autoencoder(img_rows, img_cols, channel)
     model.load_weights(model_weights_path)
     print(model.summary())
@@ -48,9 +50,9 @@ if __name__ == '__main__':
         bgr_img = bgr_img[y:y + 320, x:x + 320]
         alpha = alpha[y:y + 320, x:x + 320]
         trimap = trimap[y:y + 320, x:x + 320]
-        cv.imwrite('images/{}_image.png'.format(image_name), bgr_img)
-        cv.imwrite('images/{}_trimap.png'.format(image_name), trimap)
-        cv.imwrite('images/{}_alpha.png'.format(image_name), alpha)
+        cv.imwrite('images/{}_image.png'.format(image_name), np.array(bgr_img).astype(np.uint8))
+        cv.imwrite('images/{}_trimap.png'.format(image_name), np.array(trimap).astype(np.uint8))
+        cv.imwrite('images/{}_alpha.png'.format(image_name), np.array(alpha).astype(np.uint8))
 
         x_test = np.empty((1, 320, 320, 4), dtype=np.float32)
         x_test[0, :, :, 0:3] = bgr_img / 255.
