@@ -44,5 +44,11 @@ $ tensorboard --logdir path_to_current_dir/logs
 ### Demo
 
 ```bash
-$ python demo.py --image images/samples/03198.jpg
+$ python demo.py
 ```
+
+Image | Trimap | Output | GT |
+|---|---|---|
+|![image](https://github.com/foamliu/Deep-Image_Matting/raw/master/images/0_0.png)  | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/0_0_trimap.png) | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/0_0_out.png)| ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/0_0_alpha.png)|
+|![image](https://github.com/foamliu/Deep-Image_Matting/raw/master/images/121_12132.png)  | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/121_12132_trimap.png) | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/121_12132_out.png)| ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/121_12132_alpha.png)|
+|![image](https://github.com/foamliu/Deep-Image_Matting/raw/master/images/236_23635.png)  | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/236_23635_trimap.png) | ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/236_23635_out.png)| ![image](https://github.com/foamliu/Conv-Autoencoder/raw/master/images/236_23635_alpha.png)|
