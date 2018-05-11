@@ -3,8 +3,10 @@ import unittest
 from random import shuffle
 
 import cv2 as cv
+import numpy as np
 
 from data_generator import generate_trimap
+from trimap_dict import trimap_init, trimap_add, trimap_get
 
 
 class TestStringMethods(unittest.TestCase):
@@ -12,7 +14,6 @@ class TestStringMethods(unittest.TestCase):
     def test_generate_trimap(self):
         alpha = cv.imread('mask/035A4301.jpg', 0)
         trimap = generate_trimap(alpha)
-        self.assertEqual('foo'.upper(), 'FOO')
 
     def test_isupper(self):
         num_fgs = 431
@@ -38,11 +39,15 @@ class TestStringMethods(unittest.TestCase):
             file.write('\n'.join(train_names))
 
     def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+        trimap_init()
+
+        alpha = cv.imread('images/0_0_alpha.png')
+        trimap = cv.imread('images/0_0_trimap.png')
+
+        trimap_add(alpha, trimap)
+        new_trimap = trimap_get(alpha)
+
+        self.assertTrue(np.array_equal(trimap, new_trimap))
 
 
 if __name__ == '__main__':
