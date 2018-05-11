@@ -4,6 +4,8 @@ import random
 import cv2 as cv
 import keras.backend as K
 import numpy as np
+from keras.utils.training_utils import multi_gpu_model
+from tensorflow.python.client import device_lib
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
 with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
@@ -17,7 +19,17 @@ def custom_loss(y_true, y_pred):
     return K.mean(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr))
 
 
+# getting the number of GPUs
+def get_available_gpus():
+    local_device_protos = device_lib.list_local_devices()
+    return [x.name for x in local_device_protos if x.device_type == 'GPU']
+
+
 def do_compile(model):
+    num_gpu = len(get_available_gpus())
+    if num_gpu >= 2:
+        model = multi_gpu_model(model, gpus=num_gpu)
+
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.99, nesterov=True)
     model.compile(optimizer='nadam', loss=custom_loss)
     return model
