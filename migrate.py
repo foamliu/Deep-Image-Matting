@@ -1,12 +1,9 @@
 import keras.backend as K
 import numpy as np
-from keras.layers import Conv2D
-from keras.utils.training_utils import multi_gpu_model
-import tensorflow as tf
+
 import new_start
 from utils import do_compile
 from vgg16 import vgg16_model
-from utils import get_available_gpus
 
 
 def do_migrate_model(img_rows, img_cols, channel=4):
@@ -49,15 +46,14 @@ def do_migrate_model(img_rows, img_cols, channel=4):
 
 
 def migrate_model(img_rows, img_cols, channel=4):
-    num_gpu = len(get_available_gpus())
-    if num_gpu >= 2:
-        with tf.device("/cpu:0"):
-            print("Training with {} GPUs...".format(num_gpu))
-            new_model = do_migrate_model(img_rows, img_cols, channel)
-            new_model = multi_gpu_model(new_model, gpus=num_gpu)
-    else:
-        new_model = do_migrate_model(img_rows, img_cols, channel)
-
+    # num_gpu = len(get_available_gpus())
+    # if num_gpu >= 2:
+    #     with tf.device("/cpu:0"):
+    #         print("Training with {} GPUs...".format(num_gpu))
+    #         new_model = do_migrate_model(img_rows, img_cols, channel)
+    #         new_model = multi_gpu_model(new_model, gpus=num_gpu)
+    # else:
+    new_model = do_migrate_model(img_rows, img_cols, channel)
     new_model = do_compile(new_model)
     return new_model
 
