@@ -10,7 +10,7 @@ from utils import train_gen, valid_gen
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
-    batch_size = 64
+    batch_size = 32
     epochs = 1000
     patience = 50
     num_samples = 43100

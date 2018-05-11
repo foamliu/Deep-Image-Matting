@@ -80,7 +80,7 @@ def data_gen(usage):
     filename = '{}_names.txt'.format(usage)
     with open(filename, 'r') as f:
         names = f.read().splitlines()
-    batch_size = 16
+    batch_size = 32
     i = 0
     while True:
         batch_x = np.empty((batch_size, 320, 320, 4), dtype=np.float32)
