@@ -88,6 +88,7 @@ def data_gen(usage):
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
             # store trimap
+            trimap = np.array(trimap).astype(np.uint8)
             trimap_add(alpha / 255., trimap)
 
             i += 1
