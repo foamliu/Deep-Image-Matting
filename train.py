@@ -5,19 +5,11 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, L
 
 import migrate
 import new_start
+from config import *
 from data_generator import train_gen, valid_gen
 from trimap_dict import trimap_init, trimap_clear
 
 if __name__ == '__main__':
-    img_rows, img_cols = 320, 320
-    channel = 4
-    batch_size = 32
-    epochs = 1000
-    patience = 50
-    num_samples = 43100
-    num_train_samples = 34480
-    num_valid_samples = 8620    # num_samples - num_train_samples
-
     trimap_init()
 
     # Load our model

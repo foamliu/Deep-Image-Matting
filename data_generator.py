@@ -4,6 +4,7 @@ import random
 import cv2 as cv
 import numpy as np
 
+from config import *
 from trimap_dict import trimap_add
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
@@ -34,25 +35,25 @@ def get_crop_top_left(trimap):
     h, w = trimap.shape[:2]
     x, y = 0, 0
     for i in range(10):
-        if w > 320:
-            x = random.randint(0, w - 320)
-        if h > 320:
-            y = random.randint(0, h - 320)
-        if trimap[y + 160, x + 160] == 128:
+        if w > img_cols:
+            x = random.randint(0, w - img_cols)
+        if h > img_rows:
+            y = random.randint(0, h - img_rows)
+        if trimap[y + img_rows / 2, x + img_cols / 2] == 128:
             break
     return x, y
 
 
 def ensure_size(matrix, channel):
     h, w = matrix.shape[:2]
-    if h >= 320 and w >= 320:
+    if h >= img_rows and w >= img_cols:
         return matrix
 
     if channel > 1:
-        ret = np.zeros((320, 320, channel), dtype=np.float32)
+        ret = np.zeros((img_rows, img_cols, channel), dtype=np.float32)
         ret[0:h, 0:w, :] = matrix[:, :, :]
     else:
-        ret = np.zeros((320, 320), dtype=np.float32)
+        ret = np.zeros((img_rows, img_cols), dtype=np.float32)
         ret[0:h, 0:w] = matrix[:, :]
     return ret
 
@@ -61,11 +62,10 @@ def data_gen(usage):
     filename = '{}_names.txt'.format(usage)
     with open(filename, 'r') as f:
         names = f.read().splitlines()
-    batch_size = 32
     i = 0
     while True:
-        batch_x = np.empty((batch_size, 320, 320, 4), dtype=np.float32)
-        batch_y = np.empty((batch_size, 320, 320, 1), dtype=np.float32)
+        batch_x = np.empty((batch_size, img_rows, img_cols, 4), dtype=np.float32)
+        batch_y = np.empty((batch_size, img_rows, img_cols, 1), dtype=np.float32)
 
         for i_batch in range(batch_size):
             name = names[i]
@@ -78,11 +78,11 @@ def data_gen(usage):
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
             x, y = get_crop_top_left(trimap)
-            bgr_img = bgr_img[y:y + 320, x:x + 320]
+            bgr_img = bgr_img[y:y + img_rows, x:x + img_cols]
             bgr_img = ensure_size(bgr_img, 3)
-            trimap = trimap[y:y + 320, x:x + 320]
+            trimap = trimap[y:y + img_rows, x:x + img_cols]
             trimap = ensure_size(trimap, 1)
-            alpha = alpha[y:y + 320, x:x + 320]
+            alpha = alpha[y:y + img_rows, x:x + img_cols]
             alpha = ensure_size(alpha, 1)
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
