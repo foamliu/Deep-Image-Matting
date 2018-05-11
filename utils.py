@@ -46,9 +46,9 @@ def get_crop_top_left(trimap):
     h, w = trimap.shape[:2]
     x, y = 0, 0
     for i in range(10):
-        if x > 320:
+        if w > 320:
             x = random.randint(0, w - 320)
-        if y > 320:
+        if h > 320:
             y = random.randint(0, h - 320)
         if trimap[y + 160, x + 160] == 128:
             break
