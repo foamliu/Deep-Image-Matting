@@ -14,7 +14,7 @@ def trimap_add(alpha, trimap):
 
 def trimap_get(alpha):
     key = hash(str(alpha))
-    if key in trimap_dict.keys:
+    if key in trimap_dict.keys():
         return trimap_dict[key]
     else:
         return None
