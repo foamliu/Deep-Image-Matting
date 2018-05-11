@@ -1,6 +1,7 @@
 import keras.backend as K
 from tensorflow.python.client import device_lib
 
+from config import *
 from trimap_dict import trimap_get
 
 
@@ -10,8 +11,8 @@ def custom_loss(y_true, y_pred):
     epsilon = 1e-6
     epsilon_sqr = K.constant(epsilon ** 2)
     if trimap is not None:
-        trimap[trimap != 128] = 0
-        trimap[trimap == 128] = 1
+        trimap[trimap != unknown] = 0
+        trimap[trimap == unknown] = 1
         diff = (y_pred - y_true) * trimap
         num_pixels = K.sum(trimap)
         return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / num_pixels

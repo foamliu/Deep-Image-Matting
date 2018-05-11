@@ -27,7 +27,7 @@ def generate_trimap(alpha):
     unknown = alpha.copy()
     unknown[alpha != 0] = 255
     unknown = cv.dilate(unknown, kernel, iterations=iter)
-    trimap = np.sign(unknown - fg) * 128 + fg
+    trimap = np.sign(unknown - fg) * unknown + fg
     return np.array(trimap).astype(np.uint8)
 
 
@@ -39,7 +39,7 @@ def get_crop_top_left(trimap):
             x = random.randint(0, w - img_cols)
         if h > img_rows:
             y = random.randint(0, h - img_rows)
-        if trimap[y + img_rows / 2, x + img_cols / 2] == 128:
+        if trimap[y + 160, x + 160] == unknown:
             break
     return x, y
 
