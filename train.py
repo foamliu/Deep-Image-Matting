@@ -29,7 +29,7 @@ if __name__ == '__main__':
     model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
-    cleanup = LambdaCallback(on_epoch_end=lambda logs: trimap_clear())
+    cleanup = LambdaCallback(on_epoch_begin=lambda epoch, logs: trimap_clear())
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr, cleanup]
 
     # Start Fine-tuning
