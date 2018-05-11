@@ -2,7 +2,6 @@
 from new_start import autoencoder
 from keras.utils import plot_model
 
-
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 3

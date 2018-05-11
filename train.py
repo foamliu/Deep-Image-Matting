@@ -1,11 +1,12 @@
 import os
 
 import keras
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LambdaCallback
 
 import migrate
 import new_start
-from utils import train_gen, valid_gen
+from data_generator import train_gen, valid_gen
+from trimap_dict import trimap_init, trimap_clear
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     num_samples = 43100
     num_train_samples = 34480
     num_valid_samples = 8620    # num_samples - num_train_samples
+
 
     # Load our model
     model_path = 'models/model_weights.h5'
@@ -34,7 +36,10 @@ if __name__ == '__main__':
     model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
-    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
+    cleanup = LambdaCallback(on_epoch_end=lambda logs: trimap_clear())
+    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr, cleanup]
+
+    trimap_init()
 
     # Start Fine-tuning
     model.fit_generator(train_gen(),
@@ -42,5 +47,6 @@ if __name__ == '__main__':
                         validation_data=valid_gen(),
                         validation_steps=num_valid_samples / batch_size,
                         epochs=epochs,
-                        verbose=1
+                        verbose=1,
+                        callbacks=callbacks
                         )

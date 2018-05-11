@@ -1,8 +1,10 @@
-import unittest
-import cv2 as cv
 import random
+import unittest
 from random import shuffle
-from utils import generate_trimap
+
+import cv2 as cv
+
+from data_generator import generate_trimap
 
 
 class TestStringMethods(unittest.TestCase):

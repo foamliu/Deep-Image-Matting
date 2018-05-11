@@ -1,14 +1,12 @@
 import argparse
+import os
 
 import cv2 as cv
 import keras.backend as K
 import numpy as np
-import os
 
+from data_generator import generate_trimap, get_crop_top_left, get_alpha
 from new_start import autoencoder
-from utils import generate_trimap
-from utils import get_crop_top_left
-from utils import get_alpha
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320

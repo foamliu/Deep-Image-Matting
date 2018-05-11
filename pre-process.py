@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import zipfile
 import os
 import shutil
+import zipfile
+
 from Combined_Dataset.Training_set.Composition_code_revised import do_composite
 
 if __name__ == '__main__':
