@@ -18,6 +18,7 @@ if __name__ == '__main__':
     num_train_samples = 34480
     num_valid_samples = 8620    # num_samples - num_train_samples
 
+    trimap_init()
 
     # Load our model
     model_path = 'models/model_weights.h5'
@@ -38,8 +39,6 @@ if __name__ == '__main__':
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
     cleanup = LambdaCallback(on_epoch_end=lambda logs: trimap_clear())
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr, cleanup]
-
-    trimap_init()
 
     # Start Fine-tuning
     model.fit_generator(train_gen(),
