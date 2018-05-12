@@ -2,13 +2,16 @@ def trimap_init():
     global trimap_dict
     trimap_dict = dict()
     global status
-    status = {'hit': 0, 'miss': 0}
+    status = {'hit': 0, 'miss': 0, 'add': 0, 'addDup': 0}
 
 
 def trimap_add(alpha, trimap):
-    global trimap_dict
     key = hash(str(alpha))
+    if key in trimap_dict.keys():
+        status['addDup'] = status['addDup'] + 1
+
     trimap_dict[key] = trimap
+    status['add'] = status['add'] + 1
 
 
 def trimap_get(alpha):
@@ -22,13 +25,21 @@ def trimap_get(alpha):
 
 
 def trimap_clear(epoch):
-    global status
     size = len(trimap_dict)
     with open("training.txt", "a") as file:
-        file.write("Epoch %d, cleaning %d trimaps, hit=%d, miss=%d.\n" % (epoch, size, status['hit'], status['miss']))
+        file.write("Epoch %d, cleaning %d trimaps, hit=%d, miss=%d, add=%d, addDup=%d\n" % (epoch, size, status['hit'], status['miss'], status['add'], status['addDup']))
     trimap_dict.clear()
-    status = {'hit': 0, 'miss': 0}
+    status['hit'] = 0
+    status['miss'] = 0
+    status['add'] = 0
+    status['addDup'] = 0
 
 
 if __name__ == '__main__':
-    pass
+    trimap_init()
+
+    trimap_add([1, 2, 3], [3, 2, 1])
+    trimap = trimap_get([1, 2, 3])
+    print(trimap)
+    trimap = trimap_get([1, 2, 2])
+    trimap_clear(1)
