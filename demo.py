@@ -14,7 +14,7 @@ if __name__ == '__main__':
     channel = 4
     trimap_init()
 
-    model_weights_path = 'models/model.22-0.01.hdf5'
+    model_weights_path = 'models/model.09-0.05.hdf5'
     model = autoencoder(img_rows, img_cols, channel)
     model.load_weights(model_weights_path)
     print(model.summary())
