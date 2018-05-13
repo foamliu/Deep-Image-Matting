@@ -1,4 +1,3 @@
-import argparse
 import os
 
 import cv2 as cv
@@ -18,19 +17,6 @@ if __name__ == '__main__':
     model = autoencoder(img_rows, img_cols, channel)
     model.load_weights(model_weights_path)
     print(model.summary())
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--image", help="path to the image file")
-    ap.add_argument("-t", "--alpha", help="path to the alpha file")
-    args = vars(ap.parse_args())
-    image = args["image"]
-    alpha = args["alpha"]
-
-    if image is None:
-        image = 'images/0_0.png'
-        alpha = 'images/035A4301.jpg'
-
-    print('Start processing image: {}'.format(image))
 
     for image_name in ['182_18293', '120_12081', '249_24980']:
         filename = '{}.png'.format(image_name)
