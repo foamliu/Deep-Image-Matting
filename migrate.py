@@ -49,15 +49,7 @@ def do_migrate_model(img_rows, img_cols, channel=4):
 
 
 def migrate_model(img_rows, img_cols, channel=4):
-    num_gpu = len(get_available_gpus())
-    if num_gpu >= 2:
-        with tf.device("/cpu:0"):
-            print("Training with {} GPUs...".format(num_gpu))
-            new_model = do_migrate_model(img_rows, img_cols, channel)
-        new_model = multi_gpu_model(new_model, gpus=num_gpu)
-    else:
-        new_model = do_migrate_model(img_rows, img_cols, channel)
-    new_model = do_compile(new_model)
+    new_model = do_migrate_model(img_rows, img_cols, channel)
     return new_model
 
 

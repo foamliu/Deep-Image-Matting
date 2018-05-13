@@ -30,9 +30,3 @@ def get_available_gpus():
 # getting the number of CPUs
 def get_available_cpus():
     return multiprocessing.cpu_count()
-
-
-def do_compile(model):
-    # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.99, nesterov=True)
-    model.compile(optimizer='nadam', loss=custom_loss)
-    return model
