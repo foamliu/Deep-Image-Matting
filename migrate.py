@@ -1,15 +1,11 @@
 import keras.backend as K
 import numpy as np
-import tensorflow as tf
-from keras.utils import multi_gpu_model
 
 import new_start
-from utils import do_compile
-from utils import get_available_gpus
 from vgg16 import vgg16_model
 
 
-def do_migrate_model(img_rows, img_cols, channel=4):
+def migrate_model(img_rows, img_cols, channel=4):
     old_model = vgg16_model(224, 224, 3)
     # print(old_model.summary())
     old_layers = [l for l in old_model.layers]
@@ -45,11 +41,6 @@ def do_migrate_model(img_rows, img_cols, channel=4):
 
     del old_model
 
-    return new_model
-
-
-def migrate_model(img_rows, img_cols, channel=4):
-    new_model = do_migrate_model(img_rows, img_cols, channel)
     return new_model
 
 
