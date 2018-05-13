@@ -14,7 +14,7 @@ if __name__ == '__main__':
     channel = 4
     trimap_init()
 
-    model_weights_path = 'models/model.09-0.05.hdf5'
+    model_weights_path = 'models/model.35-0.03.hdf5'
     model = autoencoder(img_rows, img_cols, channel)
     model.load_weights(model_weights_path)
     print(model.summary())
@@ -32,11 +32,11 @@ if __name__ == '__main__':
 
     print('Start processing image: {}'.format(image))
 
-    for image_name in ['0_0', '236_23635', '121_12132']:
+    for image_name in ['182_18293', '120_12081', '249_24980']:
         filename = '{}.png'.format(image_name)
         print('Start processing image: {}'.format(filename))
         x_test = np.empty((1, img_rows, img_cols, 4), dtype=np.float32)
-        bgr_img = cv.imread(os.path.join('images', filename))
+        bgr_img = cv.imread(os.path.join('merged', filename))
         bg_h, bg_w = bgr_img.shape[:2]
         print(bg_h, bg_w)
         a = get_alpha(image_name)
