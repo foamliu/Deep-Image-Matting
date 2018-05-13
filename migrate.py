@@ -57,7 +57,7 @@ def migrate_model(img_rows, img_cols, channel=4):
         new_model = multi_gpu_model(new_model, gpus=num_gpu)
     else:
         new_model = do_migrate_model(img_rows, img_cols, channel)
-        new_model = do_compile(new_model)
+    new_model = do_compile(new_model)
     return new_model
 
 
