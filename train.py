@@ -4,9 +4,8 @@ import keras
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LambdaCallback
 from keras.utils import multi_gpu_model
-import keras.backend as K
+
 import migrate
-from new_start import autoencoder
 from config import *
 from data_generator import train_gen, valid_gen
 from trimap_dict import trimap_init, trimap_clear
@@ -45,17 +44,12 @@ if __name__ == '__main__':
             self.model_to_save.save(model_names % (epoch, logs['val_loss']))
 
 
-    # Load our model
-    # Multi-GPUs
+    # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
         with tf.device("/cpu:0"):
             print("Training with {} GPUs...".format(num_gpu))
             model = migrate.migrate_model(img_rows, img_cols, channel)
-            model.save_weights('models/model_weights.h5')
-            K.clear_session()
-            model = autoencoder(img_rows, img_cols, channel)
-            model.load_weights('models/model_weights.h5')
 
         new_model = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
@@ -69,7 +63,7 @@ if __name__ == '__main__':
 
     # Summarize then go!
     num_cpu = get_available_cpus()
-    workers = int(round(num_cpu/2))
+    workers = int(round(num_cpu / 2))
     print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, workers,
                                                                                trained_models_path))
 
