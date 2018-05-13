@@ -63,7 +63,8 @@ if __name__ == '__main__':
 
     # Summarize then go!
     num_cpu = get_available_cpus()
-    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, num_cpu / 2,
+    workers = int(round(num_cpu/2))
+    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, workers,
                                                                                trained_models_path))
 
     # Final callbacks
@@ -78,5 +79,5 @@ if __name__ == '__main__':
                             verbose=1,
                             callbacks=callbacks,
                             use_multiprocessing=True,
-                            workers=num_cpu / 2
+                            workers=workers
                             )
