@@ -79,7 +79,7 @@ def create_model(img_rows, img_cols, channel=4):
     x = Conv2D(1, (5, 5), activation='sigmoid', padding='same', name='pred', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
 
-    model = Model(intputs=input_tensor, outputs=x)
+    model = Model(input_tensor, x)
     return model
 
 
