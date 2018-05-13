@@ -4,8 +4,9 @@ import keras
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LambdaCallback
 from keras.utils import multi_gpu_model
-
+import keras.backend as K
 import migrate
+from new_start import autoencoder
 from config import *
 from data_generator import train_gen, valid_gen
 from trimap_dict import trimap_init, trimap_clear
@@ -51,6 +52,11 @@ if __name__ == '__main__':
         with tf.device("/cpu:0"):
             print("Training with {} GPUs...".format(num_gpu))
             model = migrate.migrate_model(img_rows, img_cols, channel)
+            model.save_weights('models/model_weights.h5')
+            K.clear_session()
+            model = autoencoder(img_rows, img_cols, channel)
+            model.load_weights('models/model_weights.h5')
+
         new_model = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyCbk(model)
