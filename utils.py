@@ -1,7 +1,8 @@
+import multiprocessing
+
 import keras.backend as K
 from tensorflow.python.client import device_lib
 
-from config import *
 from trimap_dict import trimap_get
 
 
@@ -24,6 +25,11 @@ def custom_loss(y_true, y_pred):
 def get_available_gpus():
     local_device_protos = device_lib.list_local_devices()
     return [x.name for x in local_device_protos if x.device_type == 'GPU']
+
+
+# getting the number of CPUs
+def get_available_cpus():
+    return multiprocessing.cpu_count()
 
 
 def do_compile(model):

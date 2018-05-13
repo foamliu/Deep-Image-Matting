@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import keras
@@ -8,8 +9,14 @@ import new_start
 from config import *
 from data_generator import train_gen, valid_gen
 from trimap_dict import trimap_init, trimap_clear
+from utils import get_available_cpus
 
 if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-t", "--trained", help="path to save trained model files")
+    args = vars(ap.parse_args())
+    trained_path = args["trained"]
+
     trimap_init()
 
     # Load our model
@@ -24,7 +31,11 @@ if __name__ == '__main__':
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
-    trained_models_path = 'models/model'
+    if trained_path is None:
+        trained_models_path = 'models/model'
+    else:
+        trained_models_path = '{}/model'.format(trained_path)
+
     model_names = trained_models_path + '.{epoch:02d}-{val_loss:.2f}.hdf5'
     model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
@@ -41,5 +52,5 @@ if __name__ == '__main__':
                         verbose=1,
                         callbacks=callbacks,
                         use_multiprocessing=True,
-                        workers=4
+                        workers=get_available_cpus() / 2
                         )
