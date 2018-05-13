@@ -9,7 +9,7 @@ from keras.optimizers import SGD
 import migrate
 from config import *
 from data_generator import train_gen, valid_gen
-from new_start import autoencoder
+from model import create_model
 from trimap_dict import trimap_init, trimap_clear
 from utils import custom_loss, get_available_cpus, get_available_gpus
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             if pretrained_path is None:
                 model = migrate.migrate_model(img_rows, img_cols, channel)
             else:
-                model = autoencoder(img_rows, img_cols, channel)
+                model = create_model(img_rows, img_cols, channel)
                 model.load_weights(pretrained_path)
 
         new_model = multi_gpu_model(model, gpus=num_gpu)
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         if pretrained_path is None:
             new_model = migrate.migrate_model(img_rows, img_cols, channel)
         else:
-            new_model = autoencoder(img_rows, img_cols, channel)
+            new_model = create_model(img_rows, img_cols, channel)
             new_model.load_weights(pretrained_path)
 
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
