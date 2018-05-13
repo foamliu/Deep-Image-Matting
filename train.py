@@ -41,7 +41,8 @@ if __name__ == '__main__':
             self.model_to_save = model
 
         def on_epoch_end(self, epoch, logs=None):
-            self.model_to_save.save(model_names % (epoch, logs['val_loss']))
+            fmt = trained_models_path + 'model.%02d-%.2f.hdf5'
+            self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
 
     # Load our model, added support for Multi-GPUs
