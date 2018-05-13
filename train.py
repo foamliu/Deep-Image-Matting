@@ -4,6 +4,7 @@ import keras
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LambdaCallback
 from keras.utils import multi_gpu_model
+from keras.optimizers import SGD
 
 import migrate
 from config import *
@@ -68,8 +69,8 @@ if __name__ == '__main__':
             new_model = autoencoder(img_rows, img_cols, channel)
             new_model.load_weights(pretrained_path)
 
-    # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    new_model.compile(optimizer='nadam', loss=custom_loss)
+    sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+    new_model.compile(optimizer=sgd, loss=custom_loss)
 
     print(new_model.summary())
 

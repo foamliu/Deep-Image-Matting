@@ -2,25 +2,29 @@ def trimap_init():
     global trimap_dict
     trimap_dict = dict()
     global status
-    status = {'hit': 0, 'miss': 0, 'add': 0, 'addDup': 0}
+    status = dict()
+    status['hit'] = 0
+    status['miss'] = 0
+    status['add'] = 0
+    status['addDup'] = 0
 
 
 def trimap_add(alpha, trimap):
     key = hash(str(alpha))
     if key in trimap_dict.keys():
-        status['addDup'] = status['addDup'] + 1
+        status['addDup'] += 1
 
     trimap_dict[key] = trimap
-    status['add'] = status['add'] + 1
+    status['add'] += 1
 
 
 def trimap_get(alpha):
     key = hash(str(alpha))
     if key in trimap_dict.keys():
-        status['hit'] = status['hit'] + 1
+        status['hit'] += 1
         return trimap_dict[key]
     else:
-        status['miss'] = status['miss'] + 1
+        status['miss'] += 1
         return None
 
 
