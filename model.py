@@ -1,13 +1,12 @@
 import keras.backend as K
-from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
+from keras.layers import Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
 from keras.models import Model
 
 
 def create_model(img_rows, img_cols, channel=4):
     # Encoder
-    input_tensor = Input(shape=(img_rows, img_cols, channel))
-    x = ZeroPadding2D((1, 1), input_shape=(img_rows, img_cols, channel), name='input')(input_tensor)
-    x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
+    input_tensor = ZeroPadding2D((1, 1), input_shape=(img_rows, img_cols, channel), name='input')
+    x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(input_tensor)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_2')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
@@ -43,9 +42,9 @@ def create_model(img_rows, img_cols, channel=4):
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     # Decoder
-    # model.add(Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
-    # model.add(BatchNormalization()(x)
-    # model.add(UpSampling2D(size=(7, 7))(x)
+    # x = Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
+    # x = BatchNormalization()(x)
+    # x = UpSampling2D(size=(7, 7))(x)
 
     x = Conv2D(512, (1, 1), activation='relu', padding='same', name='deconv6', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
