@@ -41,7 +41,7 @@ if __name__ == '__main__':
             fmt = checkpoint_models_path + 'model.%02d-%.4f.hdf5'
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
-    Load our model, added support for Multi-GPUs
+    # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
         with tf.device("/cpu:0"):
