@@ -14,8 +14,8 @@ def custom_loss_wrapper(input_tensor):
     def custom_loss(y_true, y_pred):
         trimap = input_tensor[0, :, :, 3]
         mask = K.zeros_like(trimap)
-        mask[np.allclose(trimap, 128 / 255.)] = 1.0
-        mask[not np.allclose(trimap, 128 / 255.)] = 0.0
+        mask[K.equal(trimap, 128 / 255.)] = 1.0
+        mask[K.not_equal(trimap, 128 / 255.)] = 0.0
         num_pixels = np.sum(mask)
         epsilon = 1e-6
         epsilon_sqr = K.constant(epsilon ** 2)
