@@ -1,6 +1,7 @@
 import multiprocessing
 import numpy as np
 import keras.backend as K
+from config import img_rows, img_cols
 from tensorflow.python.client import device_lib
 
 
@@ -13,9 +14,8 @@ from tensorflow.python.client import device_lib
 def custom_loss_wrapper(input_tensor):
     def custom_loss(y_true, y_pred):
         trimap = input_tensor[0, :, :, 3]
-        mask = K.zeros_like(trimap)
+        mask = np.zeros((img_rows, img_cols), dtype=np.float32)
         mask[K.equal(trimap, 128 / 255.)] = 1.0
-        mask[K.not_equal(trimap, 128 / 255.)] = 0.0
         num_pixels = np.sum(mask)
         epsilon = 1e-6
         epsilon_sqr = K.constant(epsilon ** 2)
