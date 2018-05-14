@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import keras.backend as K
 from keras.layers import Conv2D, ZeroPadding2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
@@ -57,3 +58,11 @@ def vgg16_model(img_rows, img_cols, channel=3):
     model.load_weights(weights_path)
 
     return model
+
+
+if __name__ == '__main__':
+    model = vgg16_model(224, 224, 3)
+    # input_layer = model.get_layer('input')
+    print(model.summary())
+
+    K.clear_session()
