@@ -42,35 +42,36 @@ if __name__ == '__main__':
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
     # Load our model, added support for Multi-GPUs
-    num_gpu = len(get_available_gpus())
-    if num_gpu >= 2:
-        with tf.device("/cpu:0"):
-            if pretrained_path is not None:
-                model = create_model()
-                model.load_weights(pretrained_path)
-            else:
-                model = create_model()
-                migrate.migrate_model(model)
-
-        new_model = multi_gpu_model(model, gpus=num_gpu)
-        # rewrite the callback: saving through the original model and not the multi-gpu model.
-        model_checkpoint = MyCbk(model)
+    # num_gpu = len(get_available_gpus())
+    # if num_gpu >= 2:
+    #     with tf.device("/cpu:0"):
+    #         if pretrained_path is not None:
+    #             model = create_model()
+    #             model.load_weights(pretrained_path)
+    #         else:
+    #             model = create_model()
+    #             migrate.migrate_model(model)
+    #
+    #     new_model = multi_gpu_model(model, gpus=num_gpu)
+    #     # rewrite the callback: saving through the original model and not the multi-gpu model.
+    #     model_checkpoint = MyCbk(model)
+    # else:
+    if pretrained_path is not None:
+        new_model = create_model()
+        new_model.load_weights(pretrained_path)
     else:
-        if pretrained_path is not None:
-            new_model = create_model()
-            new_model.load_weights(pretrained_path)
-        else:
-            new_model = create_model()
-            migrate.migrate_model(new_model)
+        new_model = create_model()
+        migrate.migrate_model(new_model)
 
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     # new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(new_model.get_input_at(0)))
-    new_model.compile(optimizer='nadam', loss=custom_loss)
+    # new_model.compile(optimizer='nadam', loss=custom_loss)
 
     print(new_model.summary())
 
     # Summarize then go!
     num_cpu = get_available_cpus()
+    num_gpu = 0
     workers = int(round(num_cpu / 2))
     print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, workers,
                                                                                checkpoint_models_path))
