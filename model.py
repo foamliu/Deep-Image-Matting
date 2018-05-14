@@ -2,7 +2,7 @@ import keras.backend as K
 from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
 from keras.models import Model
 from keras.utils import plot_model
-from utils import custom_loss_wrapper, custom_loss
+
 from custom_layers.unpooling_layer import Unpooling
 
 
