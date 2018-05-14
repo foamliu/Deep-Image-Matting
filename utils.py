@@ -16,12 +16,11 @@ def custom_loss_wrapper(input_tensor):
     def custom_loss(y_true, y_pred):
         trimap = input_tensor[0, :, :, 3]
         mask = K.cast(K.equal(trimap, 128 / 255.), dtype='float32')
-        y_pred = y_pred * mask
-        y_true = y_true * mask
+        diff = (y_pred - y_true) * mask
         num_pixels = K.sum(mask)
         epsilon = 1e-6
         epsilon_sqr = K.constant(epsilon ** 2)
-        return K.sum(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr)) / (num_pixels + epsilon)
+        return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
 
     return custom_loss
 
