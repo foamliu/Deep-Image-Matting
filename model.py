@@ -2,7 +2,7 @@ import keras.backend as K
 from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
 from keras.models import Model
 from keras.utils import plot_model
-from utils import custom_loss_wrapper
+import tensorflow as tf
 from custom_layers.unpooling_layer import Unpooling
 
 
@@ -59,32 +59,36 @@ def create_model():
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    new_5 = x
-    x = Unpooling(orig_5, (20, 20, 512))(new_5)
+    with tf.device('/cpu:0'):
+        x = Unpooling(orig_5, (20, 20, 512))(x)
 
     x = Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_4, (40, 40, 512))(x)
+    with tf.device('/cpu:0'):
+        x = Unpooling(orig_4, (40, 40, 512))(x)
 
     x = Conv2D(256, (5, 5), activation='relu', padding='same', name='deconv4', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_3, (80, 80, 256))(x)
+    with tf.device('/cpu:0'):
+        x = Unpooling(orig_3, (80, 80, 256))(x)
 
     x = Conv2D(128, (5, 5), activation='relu', padding='same', name='deconv3', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_2, (160, 160, 128))(x)
+    with tf.device('/cpu:0'):
+        x = Unpooling(orig_2, (160, 160, 128))(x)
 
     x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv2', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_1, (320, 320, 64))(x)
+    with tf.device('/cpu:0'):
+        x = Unpooling(orig_1, (320, 320, 64))(x)
 
     x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
