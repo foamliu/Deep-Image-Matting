@@ -2,7 +2,7 @@ import argparse
 
 import keras
 import tensorflow as tf
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LambdaCallback
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 from keras.optimizers import SGD
 
@@ -10,7 +10,7 @@ import migrate
 from config import *
 from data_generator import train_gen, valid_gen
 from model import create_model
-from utils import custom_loss, get_available_cpus, get_available_gpus
+from utils import custom_loss_wrapper, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     # Parse arguments
@@ -64,8 +64,9 @@ if __name__ == '__main__':
             new_model = create_model(img_rows, img_cols, channel)
             new_model.load_weights(pretrained_path)
 
+    input_tensor = new_model.get_layer('input')
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    new_model.compile(optimizer='nadam', loss=custom_loss)
+    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(input_tensor))
 
     print(new_model.summary())
 
