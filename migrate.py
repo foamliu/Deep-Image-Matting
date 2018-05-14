@@ -1,15 +1,15 @@
 import keras.backend as K
 import numpy as np
 
+from config import channel
 from model import create_model
 from vgg16 import vgg16_model
 
 
-def migrate_model(img_rows, img_cols, channel=4):
+def migrate_model(new_model):
     old_model = vgg16_model(224, 224, 3)
     # print(old_model.summary())
     old_layers = [l for l in old_model.layers]
-    new_model = create_model(img_rows, img_cols, 4)
     new_layers = [l for l in new_model.layers]
 
     old_conv1_1 = old_model.get_layer('conv1_1')
@@ -41,11 +41,10 @@ def migrate_model(img_rows, img_cols, channel=4):
 
     del old_model
 
-    return new_model
-
 
 if __name__ == '__main__':
-    model = migrate_model(320, 320, 4)
+    model = create_model()
+    migrate_model(model)
     print(model.summary())
     model.save_weights('models/model_weights.h5')
 

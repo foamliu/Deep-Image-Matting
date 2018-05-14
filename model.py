@@ -3,10 +3,11 @@ from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPa
 from keras.models import Model
 from keras.utils import plot_model
 
+from config import img_rows, img_cols, channel
 from custom_layers.unpooling_layer import Unpooling
 
 
-def create_model(img_rows, img_cols, channel):
+def create_model():
     # Encoder
     input_tensor = Input(shape=(img_rows, img_cols, channel))
     x = ZeroPadding2D((1, 1))(input_tensor)
