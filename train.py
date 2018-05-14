@@ -40,7 +40,7 @@ if __name__ == '__main__':
         def on_epoch_end(self, epoch, logs=None):
             fmt = checkpoint_models_path + 'model.%02d-%.4f.hdf5'
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
-            
+
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
         new_model = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
-        # model_checkpoint = MyCbk(model)
+        model_checkpoint = MyCbk(model)
     else:
         if pretrained_path is not None:
             new_model = create_model()
