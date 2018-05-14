@@ -59,7 +59,8 @@ def create_model():
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_5, (20, 20, 512))(x)
+    new_5 = x
+    x = Unpooling(orig_5, (20, 20, 512))(new_5)
 
     x = Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
