@@ -62,3 +62,29 @@ if __name__ == '__main__':
         else:
             new_model = create_model()
             migrate.migrate_model(new_model)
+
+    # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(model.input))
+
+    print(new_model.summary())
+
+    # Summarize then go!
+    num_cpu = get_available_cpus()
+    workers = int(round(num_cpu / 2))
+    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, workers,
+                                                                               checkpoint_models_path))
+
+    # Final callbacks
+    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
+
+    # Start Fine-tuning
+    new_model.fit_generator(train_gen(),
+                            steps_per_epoch=num_train_samples // batch_size,
+                            validation_data=valid_gen(),
+                            validation_steps=num_valid_samples // batch_size,
+                            epochs=epochs,
+                            verbose=1,
+                            callbacks=callbacks,
+                            use_multiprocessing=True,
+                            workers=workers
+                            )
