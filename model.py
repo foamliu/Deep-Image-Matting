@@ -6,9 +6,9 @@ from keras.utils import plot_model
 from custom_layers.unpooling_layer import Unpooling
 
 
-def create_model(img_rows, img_cols, channel=4):
+def create_model(img_rows, img_cols, channel):
     # Encoder
-    input_tensor = Input(shape=(img_rows, img_cols, channel), name='input')
+    input_tensor = Input(shape=(img_rows, img_cols, channel))
     x = ZeroPadding2D((1, 1))(input_tensor)
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
     x = ZeroPadding2D((1, 1))(x)
