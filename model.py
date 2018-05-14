@@ -85,6 +85,7 @@ def create_model(img_rows, img_cols, channel=4):
 
 if __name__ == '__main__':
     model = create_model(320, 320, 4)
-    input_layer = model.get_layer('input')
+    # input_layer = model.get_layer('input')
+    print(model.summary())
 
     K.clear_session()

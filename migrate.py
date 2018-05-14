@@ -23,7 +23,7 @@ def migrate_model(img_rows, img_cols, channel=4):
 
     for i in range(2, 31):
         old_layer = old_layers[i]
-        new_layer = new_layers[i]
+        new_layer = new_layers[i + 1]
         new_layer.set_weights(old_layer.get_weights())
 
     # flatten = old_model.get_layer('flatten')
