@@ -2,13 +2,11 @@ import cv2 as cv
 import numpy as np
 
 from model import create_model
-from trimap_dict import trimap_init
 
 # python test.py -i "images/image.png" -t "images/trimap.png"
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
-    trimap_init()
 
     model_weights_path = 'models/model.48-0.03.hdf5'
     model = create_model(img_rows, img_cols, channel)
@@ -17,6 +15,8 @@ if __name__ == '__main__':
 
     image_path = 'images/image_B.png'
     trimap_path = 'images/trimap_B.png'
+    back_path = 'images/back_B.png'
+    back_path = 'images/back_B.png'
     back_path = 'images/back_B.png'
 
     print('Start processing image: {}'.format(image_path))

@@ -5,7 +5,6 @@ import cv2 as cv
 import numpy as np
 
 from config import *
-from trimap_dict import trimap_add
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
 with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
@@ -87,9 +86,6 @@ def data_gen(usage):
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
-            # store trimap
-            trimap = np.array(trimap).astype(np.uint8)
-            trimap_add(alpha / 255., trimap)
 
             i += 1
             if i >= len(names):

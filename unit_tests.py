@@ -6,7 +6,6 @@ import cv2 as cv
 import numpy as np
 
 from data_generator import generate_trimap
-from trimap_dict import trimap_init, trimap_add, trimap_get
 
 
 class TestStringMethods(unittest.TestCase):
@@ -39,15 +38,7 @@ class TestStringMethods(unittest.TestCase):
             file.write('\n'.join(train_names))
 
     def test_split(self):
-        trimap_init()
-
-        alpha = cv.imread('images/0_0_alpha.png')
-        trimap = cv.imread('images/0_0_trimap.png')
-
-        trimap_add(alpha, trimap)
-        new_trimap = trimap_get(alpha)
-
-        self.assertTrue(np.array_equal(trimap, new_trimap))
+        pass
 
 
 if __name__ == '__main__':

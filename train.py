@@ -10,7 +10,6 @@ import migrate
 from config import *
 from data_generator import train_gen, valid_gen
 from model import create_model
-from trimap_dict import trimap_init, trimap_clear
 from utils import custom_loss, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
@@ -27,16 +26,12 @@ if __name__ == '__main__':
         # python train.py -c /mnt/Deep-Image-Matting/models/
         checkpoint_models_path = '{}/'.format(checkpoint_path)
 
-    # Init trimap dict
-    trimap_init()
-
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     model_names = checkpoint_models_path + 'model.{epoch:02d}-{val_loss:.4f}.hdf5'
     model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
-    cleanup = LambdaCallback(on_epoch_begin=lambda epoch, logs: trimap_clear(epoch))
 
 
     class MyCbk(keras.callbacks.Callback):
@@ -81,7 +76,7 @@ if __name__ == '__main__':
                                                                                checkpoint_models_path))
 
     # Final callbacks
-    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr, cleanup]
+    callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     # Start Fine-tuning
     new_model.fit_generator(train_gen(),

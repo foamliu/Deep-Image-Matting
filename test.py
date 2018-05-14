@@ -4,13 +4,11 @@ import cv2 as cv
 import numpy as np
 
 from model import create_model
-from trimap_dict import trimap_init
 
 # python test.py -i "images/image.png" -t "images/trimap.png"
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
-    trimap_init()
 
     model_weights_path = 'models/model.35-0.03.hdf5'
     model = create_model(img_rows, img_cols, channel)
