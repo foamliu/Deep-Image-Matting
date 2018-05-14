@@ -65,7 +65,7 @@ if __name__ == '__main__':
             new_model.load_weights(pretrained_path)
 
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(new_model.inputs))
+    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(new_model.input))
 
     print(new_model.summary())
 
