@@ -19,10 +19,9 @@ def custom_loss_wrapper(input_tensor):
         # mask[np.equal(mask, 128 / 255.)] = 1.0
         # mask[np.not_equal(mask, 128 / 255.)] = 1.0
         # num_pixels = np.sum(mask)
-        num_pixels = 1
         epsilon = 1e-6
         epsilon_sqr = K.constant(epsilon ** 2)
-        return K.sum(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr)) / (num_pixels + epsilon)
+        return K.mean(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr))
 
     return custom_loss
 

@@ -93,7 +93,7 @@ def create_model():
                bias_initializer='zeros')(x)
 
     model = Model(inputs=input_tensor, outputs=x)
-    model.compile(optimizer='nadam', loss=custom_loss_wrapper(input_tensor))
+    # model.compile(optimizer='nadam', loss=custom_loss_wrapper(input_tensor))
     return model
 
 
