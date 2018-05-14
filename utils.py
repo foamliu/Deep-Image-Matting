@@ -15,13 +15,13 @@ from tensorflow.python.client import device_lib
 def custom_loss_wrapper(input_tensor):
     def custom_loss(y_true, y_pred):
         trimap = input_tensor[0, :, :, 3]
-        # mask = K.eval(trimap)
-        # mask[np.equal(mask, 128 / 255.)] = 1.0
-        # mask[np.not_equal(mask, 128 / 255.)] = 1.0
-        # num_pixels = np.sum(mask)
+        mask = K.cast(K.equal(trimap, 128 / 255.), dtype='float32')
+        y_pred = y_pred * mask
+        y_true = y_true * mask
+        num_pixels = K.sum(mask)
         epsilon = 1e-6
         epsilon_sqr = K.constant(epsilon ** 2)
-        return K.mean(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr))
+        return K.sum(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr)) / (num_pixels + epsilon)
 
     return custom_loss
 
