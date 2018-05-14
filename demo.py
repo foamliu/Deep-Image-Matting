@@ -4,7 +4,7 @@ import cv2 as cv
 import keras.backend as K
 import numpy as np
 
-from data_generator import generate_trimap, get_crop_top_left, get_alpha
+from data_generator import generate_trimap, get_top_left_corner, get_alpha
 from model import create_model
 
 if __name__ == '__main__':
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         alpha = np.zeros((bg_h, bg_w), np.float32)
         alpha[0:a_h, 0:a_w] = a
         trimap = generate_trimap(alpha)
-        x, y = get_crop_top_left(trimap)
+        x, y = get_top_left_corner(trimap)
         print(x, y)
         bgr_img = bgr_img[y:y + 320, x:x + 320]
         alpha = alpha[y:y + 320, x:x + 320]

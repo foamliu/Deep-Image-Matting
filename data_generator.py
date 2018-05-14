@@ -30,7 +30,7 @@ def generate_trimap(alpha):
     return np.array(trimap).astype(np.uint8)
 
 
-def get_crop_top_left(trimap):
+def get_top_left_corner(trimap):
     h, w = trimap.shape[:2]
     x, y = 0, 0
     for i in range(10):
@@ -76,7 +76,7 @@ def data_gen(usage):
             alpha = np.zeros((bg_h, bg_w), np.float32)
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
-            x, y = get_crop_top_left(trimap)
+            x, y = get_top_left_corner(trimap)
             bgr_img = bgr_img[y:y + img_rows, x:x + img_cols]
             bgr_img = ensure_size(bgr_img, 3)
             trimap = trimap[y:y + img_rows, x:x + img_cols]
