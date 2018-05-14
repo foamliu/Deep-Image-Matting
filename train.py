@@ -9,7 +9,7 @@ import migrate
 from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from data_generator import train_gen, valid_gen
 from model import create_model
-from utils import custom_loss_wrapper, custom_loss, get_available_cpus, get_available_gpus
+from utils import get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     # Parse arguments
