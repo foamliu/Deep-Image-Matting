@@ -3,13 +3,12 @@ from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPa
 from keras.models import Model
 from keras.utils import plot_model
 
-from config import img_rows, img_cols, channel
 from custom_layers.unpooling_layer import Unpooling
 
 
 def create_model():
     # Encoder
-    input_tensor = Input(shape=(img_rows, img_cols, channel))
+    input_tensor = Input(shape=(320, 320, 4))
     x = ZeroPadding2D((1, 1))(input_tensor)
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
     x = ZeroPadding2D((1, 1))(x)
@@ -93,7 +92,7 @@ def create_model():
     x = Conv2D(1, (5, 5), activation='sigmoid', padding='same', name='pred', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
 
-    model = Model(input_tensor, x)
+    model = Model(inputs=input_tensor, outputs=x)
     return model
 
 
