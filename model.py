@@ -1,8 +1,10 @@
 import keras.backend as K
 from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
 from keras.models import Model
-from custom_layers.unpooling_layer import Unpooling
 from keras.utils import plot_model
+
+from custom_layers.unpooling_layer import Unpooling
+
 
 def create_model(img_rows, img_cols, channel=4):
     # Encoder
@@ -11,15 +13,15 @@ def create_model(img_rows, img_cols, channel=4):
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_2')(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
     orig_1 = x
+    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(128, (3, 3), activation='relu', name='conv2_1')(x)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(128, (3, 3), activation='relu', name='conv2_2')(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
     orig_2 = x
+    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(256, (3, 3), activation='relu', name='conv3_1')(x)
@@ -27,8 +29,8 @@ def create_model(img_rows, img_cols, channel=4):
     x = Conv2D(256, (3, 3), activation='relu', name='conv3_2')(x)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(256, (3, 3), activation='relu', name='conv3_3')(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
     orig_3 = x
+    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(512, (3, 3), activation='relu', name='conv4_1')(x)
@@ -36,8 +38,8 @@ def create_model(img_rows, img_cols, channel=4):
     x = Conv2D(512, (3, 3), activation='relu', name='conv4_2')(x)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(512, (3, 3), activation='relu', name='conv4_3')(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
     orig_4 = x
+    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(512, (3, 3), activation='relu', name='conv5_1')(x)
@@ -45,8 +47,8 @@ def create_model(img_rows, img_cols, channel=4):
     x = Conv2D(512, (3, 3), activation='relu', name='conv5_2')(x)
     x = ZeroPadding2D((1, 1))(x)
     x = Conv2D(512, (3, 3), activation='relu', name='conv5_3')(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
     orig_5 = x
+    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     # Decoder
     # x = Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
