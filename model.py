@@ -2,7 +2,7 @@ import keras.backend as K
 from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
 from keras.models import Model
 from keras.utils import plot_model
-
+from utils import custom_loss_wrapper
 from custom_layers.unpooling_layer import Unpooling
 
 
@@ -93,6 +93,7 @@ def create_model():
                bias_initializer='zeros')(x)
 
     model = Model(inputs=input_tensor, outputs=x)
+    model.compile(optimizer='nadam', loss=custom_loss_wrapper(input_tensor))
     return model
 
 
