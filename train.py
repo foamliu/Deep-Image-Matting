@@ -64,9 +64,8 @@ if __name__ == '__main__':
             new_model = create_model(img_rows, img_cols, channel)
             new_model.load_weights(pretrained_path)
 
-    input_tensor = new_model.get_layer('input')
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(input_tensor))
+    new_model.compile(optimizer='nadam', loss=custom_loss_wrapper(new_model.inputs))
 
     print(new_model.summary())
 
