@@ -10,6 +10,15 @@ bg/
 fg/
 mask/
 merged/
+bg_test/
+fg_test/
+mask_test/
+merged_test/
+VOC2008test.tar
+VOCdevkit/
+VOCtest_06-Nov-2007.tar
+VOCtrainval_06-Nov-2007.tar
+VOCtrainval_14-Jul-2008.tar
 train2014.zip
 Deep-Image-Matting.7z
 matting_evaluation.zip

@@ -9,12 +9,22 @@ from config import *
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
 with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
     fg_files = f.read().splitlines()
+with open('Combined_Dataset/Test_set/test_fg_names.txt') as f:
+    fg_test_files = f.read().splitlines()
 
 
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
     name = fg_files[fg_i]
     filename = os.path.join('mask', name)
+    alpha = cv.imread(filename, 0)
+    return alpha
+
+
+def get_alpha_test(name):
+    fg_i = int(name.split("_")[0])
+    name = fg_test_files[fg_i]
+    filename = os.path.join('mask_test', name)
     alpha = cv.imread(filename, 0)
     return alpha
 
