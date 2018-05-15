@@ -37,7 +37,7 @@ def get_available_cpus():
     return multiprocessing.cpu_count()
 
 
-def fill_known_area(out, trimap):
+def get_final_output(out, trimap):
     known = trimap.copy()
     known[known == 128] = 0
     unknown_mask = trimap.copy()

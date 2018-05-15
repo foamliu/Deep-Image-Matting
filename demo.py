@@ -7,7 +7,7 @@ import numpy as np
 from data_generator import generate_trimap, get_top_left_corner, get_alpha
 from model import create_model
 
-from utils import fill_known_area
+from utils import get_final_output
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         out = np.reshape(out, (img_rows, img_cols))
         print(out.shape)
         out = out * 255.0
-        out = fill_known_area(out, trimap)
+        out = get_final_output(out, trimap)
         out = out.astype(np.uint8)
         # cv.imshow('out', out)
         cv.imwrite('images/{}_out.png'.format(image_name), out)
