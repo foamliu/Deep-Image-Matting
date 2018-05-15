@@ -11,7 +11,7 @@ if __name__ == '__main__':
     channel = 4
 
     model_weights_path = 'models/model.35-0.03.hdf5'
-    model = create_model(img_rows, img_cols, channel)
+    model = create_model()
     model.load_weights(model_weights_path)
     print(model.summary())
 

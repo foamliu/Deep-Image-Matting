@@ -7,12 +7,14 @@ import numpy as np
 from data_generator import generate_trimap, get_top_left_corner, get_alpha
 from model import create_model
 
+from utils import fill_known_area
+
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
 
-    model_weights_path = 'models/model.48-0.03.hdf5'
-    model = create_model(img_rows, img_cols, channel)
+    model_weights_path = 'models/model.21-0.0747.hdf5'
+    model = create_model()
     model.load_weights(model_weights_path)
     print(model.summary())
 
@@ -46,6 +48,7 @@ if __name__ == '__main__':
         out = np.reshape(out, (img_rows, img_cols))
         print(out.shape)
         out = out * 255.0
+        out = fill_known_area(out, trimap)
         out = out.astype(np.uint8)
         # cv.imshow('out', out)
         cv.imwrite('images/{}_out.png'.format(image_name), out)

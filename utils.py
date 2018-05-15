@@ -35,3 +35,12 @@ def get_available_gpus():
 # getting the number of CPUs
 def get_available_cpus():
     return multiprocessing.cpu_count()
+
+
+def fill_known_area(out, trimap):
+    known = trimap.copy()
+    known[known == 128] = 0
+    unknown_mask = trimap.copy()
+    unknown_mask[unknown_mask != 128] = 0
+    unknown_mask[unknown_mask == 128] = 1
+    return known + unknown_mask * out
