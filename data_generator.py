@@ -1,10 +1,17 @@
 import os
 import random
+from random import shuffle
 
 import cv2 as cv
 import numpy as np
 
-from config import *
+from config import batch_size
+from config import img_cols
+from config import img_cols_half
+from config import img_rows
+from config import img_rows_half
+from config import unknown
+from utils import safe_crop
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
 with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
@@ -40,31 +47,18 @@ def generate_trimap(alpha):
     return np.array(trimap).astype(np.uint8)
 
 
-def get_top_left_corner(trimap):
-    h, w = trimap.shape[:2]
+# Randomly crop 320x320 (image, trimap) pairs centered on pixels in the unknown regions.
+def random_choice(trimap):
+    y_indices, x_indices = np.where(trimap == unknown)
+    num_unknowns = len(y_indices)
     x, y = 0, 0
-    for i in range(10):
-        if w > img_cols:
-            x = random.randint(0, w - img_cols)
-        if h > img_rows:
-            y = random.randint(0, h - img_rows)
-        if trimap[y + 160, x + 160] == 128:
-            break
+    if num_unknowns > 0:
+        ix = random.choice(range(num_unknowns))
+        center_x = x_indices[ix]
+        center_y = y_indices[ix]
+        x = max(0, center_x - img_cols_half)
+        y = max(0, center_y - img_rows_half)
     return x, y
-
-
-def ensure_size(matrix, channel):
-    h, w = matrix.shape[:2]
-    if h >= img_rows and w >= img_cols:
-        return matrix
-
-    if channel > 1:
-        ret = np.zeros((img_rows, img_cols, channel), dtype=np.float32)
-        ret[0:h, 0:w, :] = matrix[:, :, :]
-    else:
-        ret = np.zeros((img_rows, img_cols), dtype=np.float32)
-        ret[0:h, 0:w] = matrix[:, :]
-    return ret
 
 
 def data_gen(usage):
@@ -86,13 +80,10 @@ def data_gen(usage):
             alpha = np.zeros((bg_h, bg_w), np.float32)
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
-            x, y = get_top_left_corner(trimap)
-            bgr_img = bgr_img[y:y + img_rows, x:x + img_cols]
-            bgr_img = ensure_size(bgr_img, 3)
-            trimap = trimap[y:y + img_rows, x:x + img_cols]
-            trimap = ensure_size(trimap, 1)
-            alpha = alpha[y:y + img_rows, x:x + img_cols]
-            alpha = ensure_size(alpha, 1)
+            x, y = random_choice(trimap)
+            bgr_img = safe_crop(bgr_img, x, y)
+            trimap = safe_crop(trimap, x, y)
+            alpha = safe_crop(alpha, x, y)
             batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
@@ -110,6 +101,30 @@ def train_gen():
 
 def valid_gen():
     return data_gen('valid')
+
+
+def shuffle_data():
+    num_fgs = 431
+    num_bgs = 43100
+    num_bgs_per_fg = 100
+    num_valid_samples = 8620
+    names = []
+    bcount = 0
+    for fcount in range(num_fgs):
+        for i in range(num_bgs_per_fg):
+            names.append(str(fcount) + '_' + str(bcount) + '.png')
+            bcount += 1
+
+    valid_names = random.sample(names, num_valid_samples)
+    train_names = [n for n in names if n not in valid_names]
+    shuffle(valid_names)
+    shuffle(train_names)
+
+    with open('valid_names.txt', 'w') as file:
+        file.write('\n'.join(valid_names))
+
+    with open('train_names.txt', 'w') as file:
+        file.write('\n'.join(train_names))
 
 
 if __name__ == '__main__':

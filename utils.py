@@ -4,6 +4,9 @@ import keras.backend as K
 import numpy as np
 from tensorflow.python.client import device_lib
 
+from config import img_cols
+from config import img_rows
+
 
 # simple alpha prediction loss
 # def custom_loss(y_true, y_pred):
@@ -44,3 +47,14 @@ def get_final_output(out, trimap):
     unknown_mask[unknown_mask != 128] = 0
     unknown_mask[unknown_mask == 128] = 1
     return known + unknown_mask * out
+
+
+def safe_crop(mat, x, y):
+    if len(mat.shape) == 2:
+        ret = np.zeros((img_rows, img_cols), np.float32)
+    else:
+        ret = np.zeros((img_rows, img_cols, 3), np.float32)
+    crop = mat[y:y + img_rows, x:x + img_cols]
+    h, w = crop.shape[:2]
+    ret[0:h, 0:w] = crop
+    return ret

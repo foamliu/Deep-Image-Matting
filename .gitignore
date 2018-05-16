@@ -14,6 +14,7 @@ bg_test/
 fg_test/
 mask_test/
 merged_test/
+temp/
 VOC2008test.tar
 VOCdevkit/
 VOCtest_06-Nov-2007.tar
