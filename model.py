@@ -1,5 +1,5 @@
 import keras.backend as K
-from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D
+from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate
 from keras.models import Model
 from keras.utils import plot_model
 
@@ -96,14 +96,28 @@ def build_encoder_decoder_net():
     return model
 
 
-def build_refinement_net():
-    pass
+def build_refinement_net(encoder_decoder):
+    input_tensor = encoder_decoder.input
+    x = encoder_decoder.output
+    x = Concatenate(axis=1)([input_tensor, x])
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    model = Model(inputs=input_tensor, outputs=x)
+    return model
 
 
 if __name__ == '__main__':
-    model = build_encoder_decoder_net(320, 320, 4)
+    encoder_decoder = build_encoder_decoder_net(320, 320, 4)
     # input_layer = model.get_layer('input')
-    print(model.summary())
-    plot_model(model, to_file='model.svg', show_layer_names=True, show_shapes=True)
+    print(encoder_decoder.summary())
+    plot_model(encoder_decoder, to_file='encoder_decoder.svg', show_layer_names=True, show_shapes=True)
+
+    refinement = build_refinement_net(encoder_decoder)
+    print(refinement.summary())
+    plot_model(refinement, to_file='refinement.svg', show_layer_names=True, show_shapes=True)
 
     K.clear_session()
