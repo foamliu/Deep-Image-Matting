@@ -19,15 +19,14 @@ if __name__ == '__main__':
 
     pretrained_path = 'models/'
     encoder_decoder = build_encoder_decoder()
-    encoder_decoder.load_weights(pretrained_path)
-    # fix encoder-decoder part parameters and then update the refinement part.
-    for layer in encoder_decoder.layers:
-        layer.trainable = False
-
     refinement = build_refinement(encoder_decoder)
+    refinement.load_weights(pretrained_path)
+    # finetune the whole network together.
+    for layer in refinement.layers:
+        layer.trainable = True
 
-    # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    refinement.compile(optimizer='nadam', loss=custom_loss_wrapper(refinement.input))
+    sgd = SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    refinement.compile(optimizer=sgd, loss=custom_loss_wrapper(refinement.input))
 
     print(refinement.summary())
 
