@@ -99,7 +99,7 @@ def build_encoder_decoder():
 def build_refinement(encoder_decoder):
     input_tensor = encoder_decoder.input
     x = encoder_decoder.output
-    x = Concatenate(axis=1)([input_tensor, x])
+    x = Concatenate(axis=3)([input_tensor[:, :, :, 0:3], x])
     x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
