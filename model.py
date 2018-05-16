@@ -106,6 +106,8 @@ def build_refinement(encoder_decoder):
                bias_initializer='zeros')(x)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
+    x = Conv2D(1, (5, 5), activation='sigmoid', padding='same', name='refinement_pred', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
     model = Model(inputs=input_tensor, outputs=x)
     return model
 
