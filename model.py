@@ -6,7 +6,7 @@ from keras.utils import plot_model
 from custom_layers.unpooling_layer import Unpooling
 
 
-def create_model():
+def build_encoder_decoder_net():
     # Encoder
     input_tensor = Input(shape=(320, 320, 4))
     x = ZeroPadding2D((1, 1))(input_tensor)
@@ -96,8 +96,12 @@ def create_model():
     return model
 
 
+def build_refinement_net():
+    pass
+
+
 if __name__ == '__main__':
-    model = create_model(320, 320, 4)
+    model = build_encoder_decoder_net(320, 320, 4)
     # input_layer = model.get_layer('input')
     print(model.summary())
     plot_model(model, to_file='model.svg', show_layer_names=True, show_shapes=True)

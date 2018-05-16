@@ -8,7 +8,7 @@ from keras.utils import multi_gpu_model
 import migrate
 from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from data_generator import train_gen, valid_gen
-from model import create_model
+from model import build_encoder_decoder_net
 from utils import custom_loss_wrapper, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
@@ -57,10 +57,10 @@ if __name__ == '__main__':
     #     model_checkpoint = MyCbk(model)
     # else:
     if pretrained_path is not None:
-        new_model = create_model()
+        new_model = build_encoder_decoder_net()
         new_model.load_weights(pretrained_path)
     else:
-        new_model = create_model()
+        new_model = build_encoder_decoder_net()
         migrate.migrate_model(new_model)
 
     # sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)

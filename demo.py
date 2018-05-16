@@ -6,7 +6,7 @@ import keras.backend as K
 import numpy as np
 
 from data_generator import generate_trimap, random_choice, get_alpha_test
-from model import create_model
+from model import build_encoder_decoder_net
 from utils import get_final_output, safe_crop
 
 if __name__ == '__main__':
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     channel = 4
 
     model_weights_path = 'models/model.62-0.0524.hdf5'
-    model = create_model()
+    model = build_encoder_decoder_net()
     model.load_weights(model_weights_path)
     print(model.summary())
 

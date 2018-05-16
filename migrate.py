@@ -2,7 +2,7 @@ import keras.backend as K
 import numpy as np
 
 from config import channel
-from model import create_model
+from model import build_encoder_decoder_net
 from vgg16 import vgg16_model
 
 
@@ -43,7 +43,7 @@ def migrate_model(new_model):
 
 
 if __name__ == '__main__':
-    model = create_model()
+    model = build_encoder_decoder_net()
     migrate_model(model)
     print(model.summary())
     model.save_weights('models/model_weights.h5')
