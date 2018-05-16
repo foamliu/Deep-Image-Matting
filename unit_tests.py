@@ -36,18 +36,28 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(trimap[center_x, center_y], unknown)
 
         x, y = random_choice(trimap)
-
+        print(x, y)
         image = safe_crop(image, x, y)
         trimap = safe_crop(trimap, x, y)
         alpha = safe_crop(alpha, x, y)
-        cv.imwrite('temp/image.png', image)
-        cv.imwrite('temp/trimap.png', trimap)
-        cv.imwrite('temp/alpha.png', alpha)
+        cv.imwrite('temp/test_generate_trimap_image.png', image)
+        cv.imwrite('temp/test_generate_trimap_trimap.png', trimap)
+        cv.imwrite('temp/test_generate_trimap_alpha.png', alpha)
 
-        print(x, y)
-
-    def test_isupper(self):
-        pass
+    def test_flip(self):
+        image = cv.imread('fg_test/cat-1288531_1920.png')
+        alpha = cv.imread('mask_test/cat-1288531_1920.png', 0)
+        trimap = generate_trimap(alpha)
+        x, y = random_choice(trimap)
+        image = safe_crop(image, x, y)
+        trimap = safe_crop(trimap, x, y)
+        alpha = safe_crop(alpha, x, y)
+        image = np.fliplr(image)
+        trimap = np.fliplr(trimap)
+        alpha = np.fliplr(alpha)
+        cv.imwrite('temp/test_flip_image.png', image)
+        cv.imwrite('temp/test_flip_trimap.png', trimap)
+        cv.imwrite('temp/test_flip_alpha.png', alpha)
 
     def test_split(self):
         pass

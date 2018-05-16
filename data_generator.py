@@ -73,18 +73,23 @@ def data_gen(usage):
         for i_batch in range(batch_size):
             name = names[i]
             filename = os.path.join('merged', name)
-            bgr_img = cv.imread(filename)
-            bg_h, bg_w = bgr_img.shape[:2]
+            image = cv.imread(filename)
+            bg_h, bg_w = image.shape[:2]
             a = get_alpha(name)
             a_h, a_w = a.shape[:2]
             alpha = np.zeros((bg_h, bg_w), np.float32)
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
             x, y = random_choice(trimap)
-            bgr_img = safe_crop(bgr_img, x, y)
+            image = safe_crop(image, x, y)
             trimap = safe_crop(trimap, x, y)
             alpha = safe_crop(alpha, x, y)
-            batch_x[i_batch, :, :, 0:3] = bgr_img / 255.
+            # 随机水平反转 (概率1:1)
+            if np.random.random_sample() > 0.5:
+                image = np.fliplr(image)
+                trimap = np.fliplr(trimap)
+                alpha = np.fliplr(alpha)
+            batch_x[i_batch, :, :, 0:3] = image / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
 
