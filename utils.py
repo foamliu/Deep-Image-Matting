@@ -1,5 +1,6 @@
 import multiprocessing
 
+import cv2 as cv
 import keras.backend as K
 import numpy as np
 from tensorflow.python.client import device_lib
@@ -49,12 +50,15 @@ def get_final_output(out, trimap):
     return known + unknown_mask * out
 
 
-def safe_crop(mat, x, y):
+def safe_crop(mat, x, y, crop_size):
+    crop_height, crop_width = crop_size
     if len(mat.shape) == 2:
-        ret = np.zeros((img_rows, img_cols), np.float32)
+        ret = np.zeros((crop_height, crop_width), np.float32)
     else:
-        ret = np.zeros((img_rows, img_cols, 3), np.float32)
-    crop = mat[y:y + img_rows, x:x + img_cols]
+        ret = np.zeros((crop_height, crop_width, 3), np.float32)
+    crop = mat[y:y + crop_height, x:x + crop_width]
     h, w = crop.shape[:2]
     ret[0:h, 0:w] = crop
+    if crop_size != (320, 320):
+        ret = cv.resize(ret, dsize=(img_rows, img_cols), interpolation=cv.INTER_NEAREST)
     return ret

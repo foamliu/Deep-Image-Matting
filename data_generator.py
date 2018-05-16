@@ -7,9 +7,7 @@ import numpy as np
 
 from config import batch_size
 from config import img_cols
-from config import img_cols_half
 from config import img_rows
-from config import img_rows_half
 from config import unknown
 from utils import safe_crop
 
@@ -48,7 +46,8 @@ def generate_trimap(alpha):
 
 
 # Randomly crop 320x320 (image, trimap) pairs centered on pixels in the unknown regions.
-def random_choice(trimap):
+def random_choice(trimap, crop_size):
+    crop_height, crop_width = crop_size
     y_indices, x_indices = np.where(trimap == unknown)
     num_unknowns = len(y_indices)
     x, y = 0, 0
@@ -56,8 +55,8 @@ def random_choice(trimap):
         ix = random.choice(range(num_unknowns))
         center_x = x_indices[ix]
         center_y = y_indices[ix]
-        x = max(0, center_x - img_cols_half)
-        y = max(0, center_y - img_rows_half)
+        x = max(0, center_x - int(crop_width / 2))
+        y = max(0, center_y - int(crop_height / 2))
     return x, y
 
 
@@ -80,10 +79,14 @@ def data_gen(usage):
             alpha = np.zeros((bg_h, bg_w), np.float32)
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
-            x, y = random_choice(trimap)
-            image = safe_crop(image, x, y)
-            trimap = safe_crop(trimap, x, y)
-            alpha = safe_crop(alpha, x, y)
+            # 剪切尺寸 320:640:480 = 3:1:1
+            different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
+            crop_size = random.choice(different_sizes)
+
+            x, y = random_choice(trimap, crop_size)
+            image = safe_crop(image, x, y, crop_size)
+            trimap = safe_crop(trimap, x, y, crop_size)
+            alpha = safe_crop(alpha, x, y, crop_size)
             # 随机水平反转 (概率1:1)
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)

@@ -37,11 +37,13 @@ if __name__ == '__main__':
         alpha = np.zeros((bg_h, bg_w), np.float32)
         alpha[0:a_h, 0:a_w] = a
         trimap = generate_trimap(alpha)
-        x, y = random_choice(trimap)
+        different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
+        crop_size = random.choice(different_sizes)
+        x, y = random_choice(trimap, crop_size)
         print(x, y)
-        bgr_img = safe_crop(bgr_img, x, y)
-        alpha = safe_crop(alpha, x, y)
-        trimap = safe_crop(trimap, x, y)
+        bgr_img = safe_crop(bgr_img, x, y, crop_size)
+        alpha = safe_crop(alpha, x, y, crop_size)
+        trimap = safe_crop(trimap, x, y, crop_size)
         cv.imwrite('images/{}_image.png'.format(i), np.array(bgr_img).astype(np.uint8))
         cv.imwrite('images/{}_trimap.png'.format(i), np.array(trimap).astype(np.uint8))
         cv.imwrite('images/{}_alpha.png'.format(i), np.array(alpha).astype(np.uint8))

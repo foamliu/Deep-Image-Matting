@@ -59,8 +59,10 @@ class TestStringMethods(unittest.TestCase):
         cv.imwrite('temp/test_flip_trimap.png', trimap)
         cv.imwrite('temp/test_flip_alpha.png', alpha)
 
-    def test_split(self):
-        pass
+    def test_different_sizes(self):
+        different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
+        crop_size = random.choice(different_sizes)
+        print('crop_size=' + str(crop_size))
 
 
 if __name__ == '__main__':
