@@ -17,7 +17,7 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
-    pretrained_path = 'models/'
+    pretrained_path = 'models/model.98-0.0459.hdf5'
     encoder_decoder = build_encoder_decoder()
     encoder_decoder.load_weights(pretrained_path)
     # fix encoder-decoder part parameters and then update the refinement part.
