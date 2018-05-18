@@ -1,5 +1,5 @@
 import keras.backend as K
-from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate
+from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate, Lambda
 from keras.models import Model
 from keras.utils import plot_model
 
@@ -99,8 +99,9 @@ def build_encoder_decoder():
 def build_refinement(encoder_decoder):
     input_tensor = encoder_decoder.input
 
-    x = encoder_decoder.output
-    x = Concatenate(axis=3)([input_tensor[:, :, :, 0:3], x])
+    input = Lambda(lambda i: i[:, :, :, 0:3])(input_tensor)
+
+    x = Concatenate(axis=3)([input, encoder_decoder.output])
     x = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)

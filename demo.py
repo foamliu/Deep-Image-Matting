@@ -13,7 +13,7 @@ if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
 
-    model_weights_path = 'models/model.62-0.0524.hdf5'
+    model_weights_path = 'models/model.98-0.0459.hdf5'
     model = build_encoder_decoder()
     model.load_weights(model_weights_path)
     print(model.summary())
