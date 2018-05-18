@@ -26,18 +26,18 @@ def migrate_model(new_model):
         new_layer = new_layers[i + 1]
         new_layer.set_weights(old_layer.get_weights())
 
-    # flatten = old_model.get_layer('flatten')
-    # f_dim = flatten.input_shape
-    # print('f_dim: ' + str(f_dim))
-    # old_dense1 = old_model.get_layer('dense1')
-    # input_shape = old_dense1.input_shape
-    # output_dim = old_dense1.get_weights()[1].shape[0]
-    # print('output_dim: ' + str(output_dim))
-    # W, b = old_dense1.get_weights()
-    # shape = (7, 7, 512, output_dim)
-    # new_W = W.reshape(shape)
-    # new_conv6 = new_model.get_layer('conv6')
-    # new_conv6.set_weights([new_W, b])
+    flatten = old_model.get_layer('flatten')
+    f_dim = flatten.input_shape
+    print('f_dim: ' + str(f_dim))
+    old_dense1 = old_model.get_layer('dense1')
+    input_shape = old_dense1.input_shape
+    output_dim = old_dense1.get_weights()[1].shape[0]
+    print('output_dim: ' + str(output_dim))
+    W, b = old_dense1.get_weights()
+    shape = (7, 7, 512, output_dim)
+    new_W = W.reshape(shape)
+    new_conv6 = new_model.get_layer('conv6')
+    new_conv6.set_weights([new_W, b])
 
     del old_model
 

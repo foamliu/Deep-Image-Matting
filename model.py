@@ -51,9 +51,9 @@ def build_encoder_decoder():
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     # Decoder
-    # x = Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
-    # x = BatchNormalization()(x)
-    # x = UpSampling2D(size=(7, 7))(x)
+    x = Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
+    x = BatchNormalization()(x)
+    x = UpSampling2D(size=(7, 7))(x)
 
     x = Conv2D(512, (1, 1), activation='relu', padding='same', name='deconv6', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
