@@ -50,7 +50,7 @@ def get_final_output(out, trimap):
     return known + unknown_mask * out
 
 
-def safe_crop(mat, x, y, crop_size):
+def safe_crop(mat, x, y, crop_size=(320, 320)):
     crop_height, crop_width = crop_size
     if len(mat.shape) == 2:
         ret = np.zeros((crop_height, crop_width), np.float32)

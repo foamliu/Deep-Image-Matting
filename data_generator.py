@@ -46,7 +46,7 @@ def generate_trimap(alpha):
 
 
 # Randomly crop 320x320 (image, trimap) pairs centered on pixels in the unknown regions.
-def random_choice(trimap, crop_size):
+def random_choice(trimap, crop_size=(320, 320)):
     crop_height, crop_width = crop_size
     y_indices, x_indices = np.where(trimap == unknown)
     num_unknowns = len(y_indices)
@@ -80,13 +80,13 @@ def data_gen(usage):
             alpha[0:a_h, 0:a_w] = a
             trimap = generate_trimap(alpha)
             # 剪切尺寸 320:640:480 = 3:1:1
-            different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
-            crop_size = random.choice(different_sizes)
+            # different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
+            # crop_size = random.choice(different_sizes)
 
-            x, y = random_choice(trimap, crop_size)
-            image = safe_crop(image, x, y, crop_size)
-            trimap = safe_crop(trimap, x, y, crop_size)
-            alpha = safe_crop(alpha, x, y, crop_size)
+            x, y = random_choice(trimap)
+            image = safe_crop(image, x, y)
+            trimap = safe_crop(trimap, x, y)
+            alpha = safe_crop(alpha, x, y)
             # 随机水平反转 (概率1:1)
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)
