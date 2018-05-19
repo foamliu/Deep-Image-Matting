@@ -17,7 +17,7 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
-    pretrained_path = 'models/'
+    pretrained_path = 'models/refinement.35-0.0589.hdf5'
     encoder_decoder = build_encoder_decoder()
     final = build_refinement(encoder_decoder)
     final.load_weights(pretrained_path)
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     for layer in final.layers:
         layer.trainable = True
 
-    sgd = SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = SGD(lr=1e-4, decay=1e-6, momentum=0.9, nesterov=True)
     final.compile(optimizer=sgd, loss=custom_loss_wrapper(final.input))
 
     print(final.summary())
