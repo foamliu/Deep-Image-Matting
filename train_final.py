@@ -1,11 +1,12 @@
 import keras
+import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from keras.optimizers import SGD
+from keras.utils import multi_gpu_model
 
 from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from data_generator import train_gen, valid_gen
 from model import build_encoder_decoder, build_refinement
-from utils import custom_loss_wrapper, get_available_cpus
+from utils import custom_loss_wrapper, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'
@@ -17,16 +18,29 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
-    pretrained_path = 'models/refinement.35-0.0589.hdf5'
+    class MyCbk(keras.callbacks.Callback):
+        def __init__(self, model):
+            keras.callbacks.Callback.__init__(self)
+            self.model_to_save = model
+
+        def on_epoch_end(self, epoch, logs=None):
+            fmt = checkpoint_models_path + 'model.%02d-%.4f.hdf5'
+            self.model_to_save.save(fmt % (epoch, logs['val_loss']))
+
+
+    pretrained_path = 'models/final.02-0.0568.hdf5'
+    # Load our model, added support for Multi-GPUs
     encoder_decoder = build_encoder_decoder()
     final = build_refinement(encoder_decoder)
     final.load_weights(pretrained_path)
+
     # finetune the whole network together.
     for layer in final.layers:
         layer.trainable = True
 
-    sgd = SGD(lr=1e-4, decay=1e-6, momentum=0.9, nesterov=True)
-    final.compile(optimizer=sgd, loss=custom_loss_wrapper(final.input))
+    nadam = keras.optimizers.Nadam(lr=0.00002)
+    # sgd = SGD(lr=1e-4, decay=1e-6, momentum=0.9, nesterov=True)
+    final.compile(optimizer=nadam, loss=custom_loss_wrapper(final.input))
 
     print(final.summary())
 
