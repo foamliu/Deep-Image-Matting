@@ -65,6 +65,7 @@ def data_gen(usage):
     with open(filename, 'r') as f:
         names = f.read().splitlines()
     i = 0
+    np.random.shuffle(names)
     while True:
         batch_x = np.empty((batch_size, img_rows, img_cols, 4), dtype=np.float32)
         batch_y = np.empty((batch_size, img_rows, img_cols, 1), dtype=np.float32)
@@ -99,6 +100,7 @@ def data_gen(usage):
             i += 1
             if i >= len(names):
                 i = 0
+                np.random.shuffle(names)
 
         yield batch_x, batch_y
 
