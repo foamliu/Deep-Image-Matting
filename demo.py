@@ -6,17 +6,18 @@ import keras.backend as K
 import numpy as np
 
 from data_generator import generate_trimap, random_choice, get_alpha_test
-from model import build_encoder_decoder
+from model import build_encoder_decoder, build_refinement
 from utils import get_final_output, safe_crop
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
 
-    model_weights_path = 'models/model.98-0.0459.hdf5'
-    model = build_encoder_decoder()
-    model.load_weights(model_weights_path)
-    print(model.summary())
+    pretrained_path = 'models/final.27-0.0481.hdf5'
+    encoder_decoder = build_encoder_decoder()
+    final = build_refinement(encoder_decoder)
+    final.load_weights(pretrained_path)
+    print(final.summary())
 
     out_test_path = 'merged_test/'
     test_images = [f for f in os.listdir(out_test_path) if
@@ -52,7 +53,7 @@ if __name__ == '__main__':
         x_test[0, :, :, 0:3] = bgr_img / 255.
         x_test[0, :, :, 3] = trimap / 255.
 
-        out = model.predict(x_test)
+        out = final.predict(x_test)
         out = np.reshape(out, (img_rows, img_cols))
         print(out.shape)
         out = out * 255.0
