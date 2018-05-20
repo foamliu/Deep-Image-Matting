@@ -38,7 +38,7 @@ if __name__ == '__main__':
         alpha = np.zeros((bg_h, bg_w), np.float32)
         alpha[0:a_h, 0:a_w] = a
         trimap = generate_trimap(alpha)
-        different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
+        different_sizes = [(480, 480), (640, 640)]
         crop_size = random.choice(different_sizes)
         x, y = random_choice(trimap, crop_size)
         print(x, y)
