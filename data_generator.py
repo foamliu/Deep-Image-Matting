@@ -68,7 +68,7 @@ def data_gen(usage):
     np.random.shuffle(names)
     while True:
         batch_x = np.empty((batch_size, img_rows, img_cols, 4), dtype=np.float32)
-        batch_y = np.empty((batch_size, img_rows, img_cols, 1), dtype=np.float32)
+        batch_y = np.empty((batch_size, img_rows, img_cols, 2), dtype=np.float32)
 
         for i_batch in range(batch_size):
             name = names[i]
@@ -96,6 +96,7 @@ def data_gen(usage):
             batch_x[i_batch, :, :, 0:3] = image / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
             batch_y[i_batch, :, :, 0] = alpha / 255.
+            batch_y[i_batch, :, :, 1] = trimap / 255.
 
             i += 1
             if i >= len(names):

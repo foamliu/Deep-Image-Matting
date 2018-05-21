@@ -10,10 +10,15 @@ from config import img_rows
 
 
 # simple alpha prediction loss
-# def custom_loss(y_true, y_pred):
-#     epsilon = 1e-6
-#     epsilon_sqr = K.constant(epsilon ** 2)
-#     return K.mean(K.sqrt(K.square(y_pred - y_true) + epsilon_sqr))
+def custom_loss(y_true, y_pred):
+    trimap = y_true[:, :, :, 1]
+    mask = K.cast(K.equal(trimap, 128 / 255.), dtype='float32')
+    diff = (y_pred - y_true)[:, :, :, 0]
+    diff *= mask
+    num_pixels = K.sum(mask)
+    epsilon = 1e-6
+    epsilon_sqr = epsilon ** 2
+    return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
 
 
 def custom_loss_wrapper(input_tensor):
