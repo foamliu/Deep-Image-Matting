@@ -69,7 +69,7 @@ if __name__ == '__main__':
         out = y_pred.astype(np.uint8)
         draw_str(out, (20, 20), str_loss)
         # cv.imshow('out', out)
-        cv.imwrite('images/{}_out.png'.format(i), y_pred)
+        cv.imwrite('images/{}_out.png'.format(i), out)
         # cv.waitKey(0)
         # cv.destroyAllWindows()
 
