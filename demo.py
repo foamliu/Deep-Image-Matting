@@ -61,7 +61,7 @@ if __name__ == '__main__':
         print('y_pred.shape: ' + str(y_pred.shape))
 
         loss = custom_loss(y_true, y_pred)
-        str_loss = 'loss: %.4f' % K.eval(loss)
+        str_loss = 'loss: %.4f, crop_size: %s' % (K.eval(loss), str(crop_size))
         print(str_loss)
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
