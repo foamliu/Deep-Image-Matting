@@ -54,13 +54,15 @@ if __name__ == '__main__':
         x_test[0, :, :, 3] = trimap / 255.
 
         y_true = np.empty((1, 320, 320, 2), dtype=np.float32)
-        x_test[0, :, :, 0] = alpha / 255.
-        x_test[0, :, :, 1] = trimap / 255.
+        y_true[0, :, :, 0] = alpha / 255.
+        y_true[0, :, :, 1] = trimap / 255.
 
         y_pred = final.predict(x_test)
+        print('y_pred.shape: ' + str(y_pred.shape))
 
-        loss = K.eval(custom_loss(y_true, y_pred))
-        str_loss = 'loss: {}'.format(loss)
+        loss = custom_loss(y_true, y_pred)
+        str_loss = 'loss: %.4f' % K.eval(loss)
+        print(str_loss)
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
         print(y_pred.shape)
@@ -68,9 +70,6 @@ if __name__ == '__main__':
         y_pred = get_final_output(y_pred, trimap)
         out = y_pred.astype(np.uint8)
         draw_str(out, (20, 20), str_loss)
-        # cv.imshow('out', out)
         cv.imwrite('images/{}_out.png'.format(i), out)
-        # cv.waitKey(0)
-        # cv.destroyAllWindows()
 
     K.clear_session()
