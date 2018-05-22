@@ -29,23 +29,22 @@ if __name__ == '__main__':
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
 
-    pretrained_path = 'models/final.02-0.0568.hdf5'
-    num_gpu = len(get_available_gpus())
-    if num_gpu >= 2:
-        with tf.device("/cpu:0"):
-            # Load our model, added support for Multi-GPUs
-            encoder_decoder = build_encoder_decoder()
-            final = build_refinement(encoder_decoder)
-            final.load_weights(pretrained_path)
-
-        final = multi_gpu_model(final, gpus=num_gpu)
-        # rewrite the callback: saving through the original model and not the multi-gpu model.
-        model_checkpoint = MyCbk(final)
-    else:
-        # Load our model, added support for Multi-GPUs
-        encoder_decoder = build_encoder_decoder()
-        final = build_refinement(encoder_decoder)
-        final.load_weights(pretrained_path)
+    pretrained_path = 'models/final.61-0.0459.hdf5'
+    # num_gpu = len(get_available_gpus())
+    # if num_gpu >= 2:
+    #     with tf.device("/cpu:0"):
+    #         # Load our model, added support for Multi-GPUs
+    #         encoder_decoder = build_encoder_decoder()
+    #         final = build_refinement(encoder_decoder)
+    #         final.load_weights(pretrained_path)
+    #
+    #     final = multi_gpu_model(final, gpus=num_gpu)
+    #     # rewrite the callback: saving through the original model and not the multi-gpu model.
+    #     model_checkpoint = MyCbk(final)
+    # else:
+    encoder_decoder = build_encoder_decoder()
+    final = build_refinement(encoder_decoder)
+    final.load_weights(pretrained_path)
 
     # finetune the whole network together.
     for layer in final.layers:
@@ -53,7 +52,7 @@ if __name__ == '__main__':
 
     nadam = keras.optimizers.Nadam(lr=0.0002)
     # sgd = SGD(lr=1e-4, decay=1e-6, momentum=0.9, nesterov=True)
-    decoder_target = tf.placeholder(dtype='int32', shape=(None, None, None, None))
+    decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
     final.compile(optimizer=nadam, loss=custom_loss, target_tensors=[decoder_target])
 
     print(final.summary())
