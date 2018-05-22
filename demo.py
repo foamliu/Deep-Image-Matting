@@ -57,7 +57,7 @@ if __name__ == '__main__':
         out = np.reshape(out, (img_rows, img_cols))
         print(out.shape)
         out = out * 255.0
-        out = get_final_output(out, trimap)
+        # out = get_final_output(out, trimap)
         out = out.astype(np.uint8)
         # cv.imshow('out', out)
         cv.imwrite('images/{}_out.png'.format(i), out)
