@@ -24,6 +24,7 @@ if __name__ == '__main__':
                    os.path.isfile(os.path.join(out_test_path, f)) and f.endswith('.png')]
     samples = random.sample(test_images, 10)
 
+    sum = 0.0
     for i in range(len(samples)):
         filename = samples[i]
         image_name = filename.split('.')[0]
@@ -63,6 +64,7 @@ if __name__ == '__main__':
         loss = custom_loss(y_true, y_pred)
         str_loss = 'loss: %.4f, crop_size: %s' % (K.eval(loss), str(crop_size))
         print(str_loss)
+        sum += loss
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
         print(y_pred.shape)
@@ -71,5 +73,6 @@ if __name__ == '__main__':
         out = y_pred.astype(np.uint8)
         draw_str(out, (20, 20), str_loss)
         cv.imwrite('images/{}_out.png'.format(i), out)
+        print('avg loss: %.6f' % (sum / 10))
 
     K.clear_session()
