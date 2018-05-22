@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
         y_pred = final.predict(x_test)
 
-        loss = custom_loss(y_true, y_pred)
+        loss = K.eval(custom_loss(y_true, y_pred))
         str_loss = 'loss: {}'.format(loss)
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
