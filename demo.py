@@ -7,7 +7,7 @@ import numpy as np
 
 from data_generator import generate_trimap, random_choice, get_alpha_test
 from model import build_encoder_decoder, build_refinement
-from utils import get_final_output, safe_crop
+from utils import get_final_output, safe_crop, custom_loss, draw_str
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
@@ -53,14 +53,23 @@ if __name__ == '__main__':
         x_test[0, :, :, 0:3] = bgr_img / 255.
         x_test[0, :, :, 3] = trimap / 255.
 
-        out = final.predict(x_test)
-        out = np.reshape(out, (img_rows, img_cols))
-        print(out.shape)
-        out = out * 255.0
-        out = get_final_output(out, trimap)
-        out = out.astype(np.uint8)
+        y_true = np.empty((1, 320, 320, 2), dtype=np.float32)
+        x_test[0, :, :, 0] = alpha / 255.
+        x_test[0, :, :, 1] = trimap / 255.
+
+        y_pred = final.predict(x_test)
+
+        loss = custom_loss(y_true, y_pred)
+        str_loss = 'loss: {}'.format(loss)
+
+        y_pred = np.reshape(y_pred, (img_rows, img_cols))
+        print(y_pred.shape)
+        y_pred = y_pred * 255.0
+        y_pred = get_final_output(y_pred, trimap)
+        out = y_pred.astype(np.uint8)
+        draw_str(out, (20, 20), str_loss)
         # cv.imshow('out', out)
-        cv.imwrite('images/{}_out.png'.format(i), out)
+        cv.imwrite('images/{}_out.png'.format(i), y_pred)
         # cv.waitKey(0)
         # cv.destroyAllWindows()
 

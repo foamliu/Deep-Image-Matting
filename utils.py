@@ -67,3 +67,9 @@ def safe_crop(mat, x, y, crop_size=(320, 320)):
     if crop_size != (320, 320):
         ret = cv.resize(ret, dsize=(img_rows, img_cols), interpolation=cv.INTER_NEAREST)
     return ret
+
+
+def draw_str(dst, target, s):
+    x, y = target
+    cv.putText(dst, s, (x + 1, y + 1), cv.FONT_HERSHEY_PLAIN, 1.0, (0, 0, 0), thickness=2, lineType=cv.LINE_AA)
+    cv.putText(dst, s, (x, y), cv.FONT_HERSHEY_PLAIN, 1.0, (255, 255, 255), lineType=cv.LINE_AA)
