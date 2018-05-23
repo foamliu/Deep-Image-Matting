@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
-        do_composite()
+    do_composite()
 
     # path to provided foreground images
     fg_test_path = 'fg_test/'
