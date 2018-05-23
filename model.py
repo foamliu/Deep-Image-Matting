@@ -2,7 +2,8 @@ import keras.backend as K
 from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate, Lambda
 from keras.models import Model
 from keras.utils import plot_model
-
+import tensorflow as tf
+from keras.utils import multi_gpu_model
 from custom_layers.unpooling_layer import Unpooling
 
 
@@ -119,13 +120,18 @@ def build_refinement(encoder_decoder):
 
 
 if __name__ == '__main__':
-    encoder_decoder = build_encoder_decoder()
-    # input_layer = model.get_layer('input')
+    with tf.device("/cpu:0"):
+        encoder_decoder = build_encoder_decoder()
     print(encoder_decoder.summary())
     plot_model(encoder_decoder, to_file='encoder_decoder.svg', show_layer_names=True, show_shapes=True)
 
-    refinement = build_refinement(encoder_decoder)
+    with tf.device("/cpu:0"):
+        refinement = build_refinement(encoder_decoder)
     print(refinement.summary())
     plot_model(refinement, to_file='refinement.svg', show_layer_names=True, show_shapes=True)
+
+    parallel_model = multi_gpu_model(refinement, gpus=None)
+    print(parallel_model.summary())
+    plot_model(parallel_model, to_file='parallel_model.svg', show_layer_names=True, show_shapes=True)
 
     K.clear_session()
