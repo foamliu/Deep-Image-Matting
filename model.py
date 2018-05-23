@@ -1,9 +1,11 @@
 import keras.backend as K
-from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate, Lambda
-from keras.models import Model
-from keras.utils import plot_model
 import tensorflow as tf
+from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate, \
+    Reshape, Lambda
+from keras.models import Model
 from keras.utils import multi_gpu_model
+from keras.utils import plot_model
+
 from custom_layers.unpooling_layer import Unpooling
 
 
@@ -60,7 +62,7 @@ def build_encoder_decoder():
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-        the_shape = K.int_shape(orig_5)
+    the_shape = K.int_shape(orig_5)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
     origReshaped = Reshape(shape)(orig_5)
     # print('origReshaped.shape: ' + str(K.int_shape(origReshaped)))

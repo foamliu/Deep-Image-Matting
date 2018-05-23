@@ -1,3 +1,5 @@
+import argparse
+
 import keras
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
@@ -10,6 +12,11 @@ from utils import custom_loss, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'
+    # Parse arguments
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    args = vars(ap.parse_args())
+    pretrained_path = args["pretrained"]
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
@@ -28,23 +35,21 @@ if __name__ == '__main__':
             fmt = checkpoint_models_path + 'model.%02d-%.4f.hdf5'
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
-
-    pretrained_path = 'models/final.61-0.0459.hdf5'
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
         with tf.device("/cpu:0"):
             # Load our model, added support for Multi-GPUs
-            encoder_decoder = build_encoder_decoder()
-            final = build_refinement(encoder_decoder)
-            final.load_weights(pretrained_path)
+            model = build_encoder_decoder()
+            model = build_refinement(model)
+            model.load_weights(pretrained_path)
     
-        final = multi_gpu_model(final, gpus=num_gpu)
+        final = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
-        model_checkpoint = MyCbk(final)
+        model_checkpoint = MyCbk(model)
     else:
-	    encoder_decoder = build_encoder_decoder()
-	    final = build_refinement(encoder_decoder)
-	    final.load_weights(pretrained_path)
+        model = build_encoder_decoder()
+        final = build_refinement(model)
+        final.load_weights(pretrained_path)
 
     # finetune the whole network together.
     for layer in final.layers:
