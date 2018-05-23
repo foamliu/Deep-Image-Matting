@@ -1,6 +1,5 @@
 .idea/
 Adobe_Deep_Matting_Dataset.zip
-Combined_Dataset/
 __pycache__/
 custom_layers/__pycache__/
 models/
@@ -24,3 +23,14 @@ train2014.zip
 Deep-Image-Matting.7z
 matting_evaluation.zip
 training.txt
+Combined_Dataset/Adobe Deep Image Mattng Dataset License Agreement.pdf
+Combined_Dataset/README.txt
+Combined_Dataset/Test_set/Adobe-licensed images/
+Combined_Dataset/Test_set/Composition_code.py
+Combined_Dataset/Test_set/test_bg_names.txt
+Combined_Dataset/Test_set/test_fg_names.txt
+Combined_Dataset/Training_set/Adobe-licensed images/
+Combined_Dataset/Training_set/Composition_code.py
+Combined_Dataset/Training_set/Other/
+Combined_Dataset/Training_set/training_bg_names.txt
+Combined_Dataset/Training_set/training_fg_names.txt
