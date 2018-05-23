@@ -13,7 +13,7 @@ if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
 
-    pretrained_path = 'models/final.25-0.0413.hdf5'
+    pretrained_path = 'models/final.42-0.0398.hdf5'
     encoder_decoder = build_encoder_decoder()
     final = build_refinement(encoder_decoder)
     final.load_weights(pretrained_path)
@@ -24,7 +24,7 @@ if __name__ == '__main__':
                    os.path.isfile(os.path.join(out_test_path, f)) and f.endswith('.png')]
     samples = random.sample(test_images, 10)
 
-    sum = 0.0
+    total_loss = 0.0
     for i in range(len(samples)):
         filename = samples[i]
         image_name = filename.split('.')[0]
@@ -59,12 +59,12 @@ if __name__ == '__main__':
         y_true[0, :, :, 1] = trimap / 255.
 
         y_pred = final.predict(x_test)
-        print('y_pred.shape: ' + str(y_pred.shape))
+        # print('y_pred.shape: ' + str(y_pred.shape))
 
-        loss = custom_loss(y_true, y_pred)
-        str_loss = 'loss: %.4f, crop_size: %s' % (K.eval(loss), str(crop_size))
+        loss = K.eval(custom_loss(y_true, y_pred))
+        str_loss = 'loss: %.4f, crop_size: %s' % (loss, str(crop_size))
         print(str_loss)
-        sum += loss
+        total_loss += loss
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
         print(y_pred.shape)
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         out = y_pred.astype(np.uint8)
         draw_str(out, (20, 20), str_loss)
         cv.imwrite('images/{}_out.png'.format(i), out)
-        print('avg loss: %.6f' % (sum / 10))
+
+    print('avg loss: %.6f' % (float(total_loss) / 10))
 
     K.clear_session()
