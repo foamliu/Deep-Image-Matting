@@ -4,7 +4,7 @@ from random import shuffle
 
 import cv2 as cv
 import numpy as np
-
+from keras.utils import Sequence
 from config import batch_size
 from config import img_cols
 from config import img_rows
@@ -60,18 +60,28 @@ def random_choice(trimap, crop_size=(320, 320)):
     return x, y
 
 
-def data_gen(usage):
-    filename = '{}_names.txt'.format(usage)
-    with open(filename, 'r') as f:
-        names = f.read().splitlines()
-    i = 0
-    np.random.shuffle(names)
-    while True:
-        batch_x = np.empty((batch_size, img_rows, img_cols, 4), dtype=np.float32)
-        batch_y = np.empty((batch_size, img_rows, img_cols, 2), dtype=np.float32)
+class DataGenSequence(Sequence):
+    def __init__(self, usage):
+        self.usage = usage
 
-        for i_batch in range(batch_size):
-            name = names[i]
+        filename = '{}_names.txt'.format(usage)
+        with open(filename, 'r') as f:
+            self.names = f.read().splitlines()
+
+        np.random.shuffle(self.names)
+
+    def __len__(self):
+        return int(np.ceil(len(self.names) / float(batch_size)))
+
+    def __getitem__(self, idx):
+        i = idx * batch_size
+
+        length = min(batch_size, (len(self.names) - i))
+        batch_x = np.empty((length, img_rows, img_cols, 4), dtype=np.float32)
+        batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
+
+        for i_batch in range(length):
+            name = self.names[i]
             filename = os.path.join('merged', name)
             image = cv.imread(filename)
             bg_h, bg_w = image.shape[:2]
@@ -99,19 +109,19 @@ def data_gen(usage):
             batch_y[i_batch, :, :, 1] = trimap / 255.
 
             i += 1
-            if i >= len(names):
-                i = 0
-                np.random.shuffle(names)
 
-        yield batch_x, batch_y
+        return batch_x, batch_y
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.names)
 
 
 def train_gen():
-    return data_gen('train')
+    return DataGenSequence('train')
 
 
 def valid_gen():
-    return data_gen('valid')
+    return DataGenSequence('valid')
 
 
 def shuffle_data():
