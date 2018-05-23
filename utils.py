@@ -21,20 +21,6 @@ def custom_loss(y_true, y_pred):
     return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
 
 
-def custom_loss_np(y_true, y_pred):
-    trimap = y_true[:, :, :, 1]
-    # print('trimap: ' + str(trimap))
-    mask = (np.equal(trimap, 128 / 255.)).astype(np.float32)
-    # print('mask: ' + str(mask))
-    diff = (y_pred - y_true)[:, :, :, 0]
-    diff *= mask
-    num_pixels = np.sum(mask)
-    # print('num_pixels: ' + str(num_pixels))
-    epsilon = 1e-6
-    epsilon_sqr = epsilon ** 2
-    return np.sum(np.sqrt(np.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
-
-
 def custom_loss_wrapper(input_tensor):
     def custom_loss(y_true, y_pred):
         trimap = input_tensor[:, :, :, 3]

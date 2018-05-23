@@ -62,8 +62,8 @@ if __name__ == '__main__':
         # print('y_pred.shape: ' + str(y_pred.shape))
 
         loss = K.eval(custom_loss(y_true, y_pred))
-        str_loss = 'loss: %.4f, crop_size: %s' % (loss, str(crop_size))
-        print(str_loss)
+        str_msg = 'loss: %.4f, crop_size: %s' % (loss, str(crop_size))
+        print(str_msg)
         total_loss += loss
 
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         y_pred = y_pred * 255.0
         y_pred = get_final_output(y_pred, trimap)
         out = y_pred.astype(np.uint8)
-        draw_str(out, (20, 20), str_loss)
+        draw_str(out, (20, 20), str_msg)
         cv.imwrite('images/{}_out.png'.format(i), out)
 
     print('avg loss: %.6f' % (float(total_loss) / 10))
