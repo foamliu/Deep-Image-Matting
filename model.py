@@ -60,31 +60,31 @@ def build_encoder_decoder():
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_5, (20, 20, 512))(x)
+    x = Unpooling(orig_5)(x)
 
     x = Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_4, (40, 40, 512))(x)
+    x = Unpooling(orig_4)(x)
 
     x = Conv2D(256, (5, 5), activation='relu', padding='same', name='deconv4', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_3, (80, 80, 256))(x)
+    x = Unpooling(orig_3)(x)
 
     x = Conv2D(128, (5, 5), activation='relu', padding='same', name='deconv3', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_2, (160, 160, 128))(x)
+    x = Unpooling(orig_2)(x)
 
     x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv2', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
-    x = Unpooling(orig_1, (320, 320, 64))(x)
+    x = Unpooling(orig_1)(x)
 
     x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
