@@ -63,8 +63,8 @@ if __name__ == '__main__':
         # print('y_pred.shape: ' + str(y_pred.shape))
 
         loss = K.eval(custom_loss(y_true, y_pred))
-        sad_loss = compute_sad_loss(y_pred[0], y_true, trimap)
-        mse_loss = compute_mse_loss(y_pred[0], y_true, trimap)
+        sad_loss = compute_sad_loss(y_pred[0] * 255., alpha, trimap)
+        mse_loss = compute_mse_loss(y_pred[0] * 255., alpha, trimap)
         str_msg = 'sad_loss: %.4f, mse_loss: %.4f, crop_size: %s' % (sad_loss, mse_loss, str(crop_size))
         print(str_msg)
         total_loss += loss
