@@ -74,7 +74,7 @@ if __name__ == '__main__':
         print(str_msg)
 
         out = y_pred
-        draw_str(out, (10, 10), str_msg)
+        draw_str(out, (10, 20), str_msg)
         cv.imwrite('images/{}_out.png'.format(i), out)
 
     K.clear_session()
