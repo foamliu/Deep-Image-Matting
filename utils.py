@@ -82,7 +82,7 @@ def compute_mse_loss(pred, target, trimap):
 
 
 def compute_sad_loss(pred, target, trimap):
-    error_map = np.abs(float(pred) - float(target)) / 255.
-    loss = sum(sum(error_map * float(trimap == 128)))
+    error_map = np.abs(pred.astype("float32") - target.astype("float32")) / 255.
+    loss = np.sum(error_map * (trimap == 128).astype("float32"))
     loss = loss / 1000
     return loss
