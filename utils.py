@@ -73,3 +73,16 @@ def draw_str(dst, target, s):
     x, y = target
     cv.putText(dst, s, (x + 1, y + 1), cv.FONT_HERSHEY_PLAIN, 1.0, (0, 0, 0), thickness=2, lineType=cv.LINE_AA)
     cv.putText(dst, s, (x, y), cv.FONT_HERSHEY_PLAIN, 1.0, (255, 255, 255), lineType=cv.LINE_AA)
+
+
+def compute_mse_loss(pred, target, trimap):
+    error_map = (pred.astype(np.float32) - target.astype(np.float32)) / 255.
+    loss = np.sum(error_map ** 2. * (trimap == 128).astype(np.float32)) / np.sum((trimap == 128).astype(np.float32))
+    return loss
+
+
+def compute_sad_loss(pred, target, trimap):
+    error_map = np.abs(float(pred) - float(target)) / 255.
+    loss = sum(sum(error_map * float(trimap == 128)))
+    loss = loss / 1000
+    return loss

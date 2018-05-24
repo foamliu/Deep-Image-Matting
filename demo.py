@@ -8,6 +8,7 @@ import numpy as np
 from data_generator import generate_trimap, random_choice, get_alpha_test
 from model import build_encoder_decoder, build_refinement
 from utils import get_final_output, safe_crop, custom_loss, draw_str
+from utils import compute_mse_loss, compute_sad_loss
 
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
@@ -62,7 +63,9 @@ if __name__ == '__main__':
         # print('y_pred.shape: ' + str(y_pred.shape))
 
         loss = K.eval(custom_loss(y_true, y_pred))
-        str_msg = 'loss: %.4f, crop_size: %s' % (loss, str(crop_size))
+        sad_loss = compute_sad_loss(y_pred[0], y_true, y_pred)
+        mse_loss = compute_mse_loss(y_pred[0], y_true, y_pred)
+        str_msg = 'sad_loss: %.4f, mse_loss: %.4f, crop_size: %s' % (sad_loss, mse_loss, str(crop_size))
         print(str_msg)
         total_loss += loss
 
