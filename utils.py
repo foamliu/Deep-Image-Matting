@@ -76,13 +76,18 @@ def draw_str(dst, target, s):
 
 
 def compute_mse_loss(pred, target, trimap):
-    error_map = (pred.astype(np.float32) - target.astype(np.float32)) / 255.
-    loss = np.sum(error_map ** 2. * (trimap == 128).astype(np.float32)) / np.sum((trimap == 128).astype(np.float32))
+    error_map = (pred - target) / 255.
+    unknown = (trimap == 128).astype(np.float32)
+    print('unknown: ' + str(unknown))
+    loss = np.sum(np.square(error_map) * unknown) / np.sum(unknown)
+    print('mse_loss: ' + str(loss))
     return loss
 
 
 def compute_sad_loss(pred, target, trimap):
-    error_map = np.abs(pred.astype("float32") - target.astype("float32")) / 255.
-    loss = np.sum(error_map * (trimap == 128).astype("float32"))
+    error_map = np.abs(pred - target) / 255.
+    unknown = (trimap == 128).astype(np.float32)
+    loss = np.sum(error_map * unknown)
     loss = loss / 1000
+    print('sad_loss: ' + str(loss))
     return loss
