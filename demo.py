@@ -62,21 +62,19 @@ if __name__ == '__main__':
         y_pred = final.predict(x_test)
         # print('y_pred.shape: ' + str(y_pred.shape))
 
-        loss = K.eval(custom_loss(y_true, y_pred))
-        sad_loss = compute_sad_loss(y_pred[0] * 255., alpha, trimap)
-        mse_loss = compute_mse_loss(y_pred[0] * 255., alpha, trimap)
-        str_msg = 'sad_loss: %.4f, mse_loss: %.4f, crop_size: %s' % (sad_loss, mse_loss, str(crop_size))
-        print(str_msg)
-        total_loss += loss
-
         y_pred = np.reshape(y_pred, (img_rows, img_cols))
         print(y_pred.shape)
         y_pred = y_pred * 255.0
         y_pred = get_final_output(y_pred, trimap)
-        out = y_pred.astype(np.uint8)
-        draw_str(out, (20, 20), str_msg)
-        cv.imwrite('images/{}_out.png'.format(i), out)
+        y_pred = y_pred.astype(np.uint8)
 
-    print('avg loss: %.6f' % (float(total_loss) / 10))
+        sad_loss = compute_sad_loss(y_pred, alpha, trimap)
+        mse_loss = compute_mse_loss(y_pred, alpha, trimap)
+        str_msg = 'sad_loss: %.4f, mse_loss: %.4f, crop_size: %s' % (sad_loss, mse_loss, str(crop_size))
+        print(str_msg)
+
+        out = y_pred
+        draw_str(out, (10, 10), str_msg)
+        cv.imwrite('images/{}_out.png'.format(i), out)
 
     K.clear_session()
