@@ -7,7 +7,7 @@ import numpy as np
 
 from data_generator import generate_trimap, random_choice, get_alpha_test
 from model import build_encoder_decoder, build_refinement
-from utils import get_final_output, safe_crop, custom_loss, draw_str
+from utils import get_final_output, safe_crop, alpha_prediction_loss, draw_str
 from utils import compute_mse_loss, compute_sad_loss
 
 if __name__ == '__main__':

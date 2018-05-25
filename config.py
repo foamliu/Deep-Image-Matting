@@ -9,3 +9,5 @@ num_train_samples = 34480
 # num_samples - num_train_samples
 num_valid_samples = 8620
 unknown = 128
+epsilon = 1e-6
+epsilon_sqr = epsilon ** 2

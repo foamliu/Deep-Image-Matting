@@ -7,17 +7,18 @@ from tensorflow.python.client import device_lib
 
 from config import img_cols
 from config import img_rows
+from config import epsilon, epsilon_sqr
 
 
-# simple alpha prediction loss
-def custom_loss(y_true, y_pred):
+# alpha prediction loss: the abosolute difference between the ground truth alpha values and the
+# predicted alpha values at each pixel. However, due to the non-differentiable property of
+# absolute values, we use the following loss function to approximate it.
+def alpha_prediction_loss(y_true, y_pred):
     trimap = y_true[:, :, :, 1]
     mask = K.cast(K.equal(trimap, 128 / 255.), dtype='float32')
     diff = (y_pred - y_true)[:, :, :, 0]
     diff *= mask
     num_pixels = K.sum(mask)
-    epsilon = 1e-6
-    epsilon_sqr = epsilon ** 2
     return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
 
 
