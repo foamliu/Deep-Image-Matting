@@ -23,7 +23,7 @@ def overall_loss(y_true, y_pred):
 # absolute values, we use the following loss function to approximate it.
 def alpha_prediction_loss(y_true, y_pred):
     mask = y_true[:, :, :, 1]
-    diff = y_pred - y_true[:, :, :, 0]
+    diff = y_pred[:, :, :, 0] - y_true[:, :, :, 0]
     diff = diff * mask
     num_pixels = K.sum(mask)
     return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
@@ -34,6 +34,7 @@ def alpha_prediction_loss(y_true, y_pred):
 # alpha mattes.
 def compositional_loss(y_true, y_pred):
     mask = y_true[:, :, :, 1]
+    mask = K.reshape(mask, (-1, img_rows, img_cols, 1))
     image = y_true[:, :, :, 2:5]
     fg = y_true[:, :, :, 5:8]
     bg = y_true[:, :, :, 8:11]
@@ -89,12 +90,14 @@ def get_final_output(out, trimap):
 
 
 def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
-    h, w = crop_size
+    crop_height, crop_width = crop_size
     if len(mat.shape) == 2:
-        ret = np.zeros((h, w), np.float32)
+        ret = np.zeros((crop_height, crop_width), np.float32)
     else:
-        ret = np.zeros((h, w, 3), np.float32)
-    ret[0:h, 0:w] = mat[y:y + h, x:x + w]
+        ret = np.zeros((crop_height, crop_width, 3), np.float32)
+    crop = mat[y:y + crop_height, x:x + crop_width]
+    h, w = crop.shape[:2]
+    ret[0:h, 0:w] = crop
     if crop_size != (img_rows, img_cols):
         ret = cv.resize(ret, dsize=(img_rows, img_cols), interpolation=cv.INTER_CUBIC)
     return ret

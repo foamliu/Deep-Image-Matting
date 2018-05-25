@@ -6,7 +6,7 @@ import numpy as np
 import os
 from config import unknown_code
 from data_generator import generate_trimap
-from data_generator import get_alpha_test
+from data_generator import get_alpha
 from data_generator import random_choice
 from utils import safe_crop
 
@@ -14,9 +14,10 @@ from utils import safe_crop
 class TestStringMethods(unittest.TestCase):
 
     def test_generate_trimap(self):
-        image = cv.imread('fg_test/cat-1288531_1920.png')
-        alpha = cv.imread('mask_test/cat-1288531_1920.png', 0)
+        image = cv.imread('fg/1-1252426161dfXY.jpg')
+        alpha = cv.imread('mask/1-1252426161dfXY.jpg', 0)
         trimap = generate_trimap(alpha)
+        self.assertEqual(trimap.shape, (615, 410))
 
         # ensure np.where works as expected.
         count = 0
@@ -37,7 +38,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(trimap[center_x, center_y], unknown_code)
 
         x, y = random_choice(trimap)
-        print(x, y)
+        # print(x, y)
         image = safe_crop(image, x, y)
         trimap = safe_crop(trimap, x, y)
         alpha = safe_crop(alpha, x, y)
@@ -46,8 +47,9 @@ class TestStringMethods(unittest.TestCase):
         cv.imwrite('temp/test_generate_trimap_alpha.png', alpha)
 
     def test_flip(self):
-        image = cv.imread('fg_test/cat-1288531_1920.png')
-        alpha = cv.imread('mask_test/cat-1288531_1920.png', 0)
+        image = cv.imread('fg/1-1252426161dfXY.jpg')
+        # print(image.shape)
+        alpha = cv.imread('mask/1-1252426161dfXY.jpg', 0)
         trimap = generate_trimap(alpha)
         x, y = random_choice(trimap)
         image = safe_crop(image, x, y)
@@ -63,16 +65,14 @@ class TestStringMethods(unittest.TestCase):
     def test_different_sizes(self):
         different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
         crop_size = random.choice(different_sizes)
-        print('crop_size=' + str(crop_size))
+        # print('crop_size=' + str(crop_size))
 
     def test_resize(self):
-        with open('Combined_Dataset/Test_set/test_bg_names.txt') as f:
-            bg_test_files = f.read().splitlines()
-        name = '35_716.png'
-        filename = os.path.join('merged_test', name)
+        name = '0_0.png'
+        filename = os.path.join('merged', name)
         image = cv.imread(filename)
         bg_h, bg_w = image.shape[:2]
-        a = get_alpha_test(name)
+        a = get_alpha(name)
         a_h, a_w = a.shape[:2]
         alpha = np.zeros((bg_h, bg_w), np.float32)
         alpha[0:a_h, 0:a_w] = a

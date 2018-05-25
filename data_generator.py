@@ -1,5 +1,6 @@
 import math
 import os
+import random
 from random import shuffle
 
 import cv2 as cv
@@ -7,7 +8,7 @@ import numpy as np
 from keras.utils import Sequence
 
 from config import batch_size
-from config import fg_path, bg_path, a_path, out_path
+from config import fg_path, bg_path, a_path
 from config import img_cols, img_rows
 from config import unknown_code
 from utils import safe_crop
@@ -42,14 +43,18 @@ def get_alpha_test(name):
 def composite4(fg, bg, a, w, h):
     fg = np.array(fg, np.float32)
     bg_h, bg_w = bg.shape[:2]
-    x = np.random.randint(0, bg_w - w)
-    y = np.random.randint(0, bg_h - h)
+    x = 0
+    if bg_w > w:
+        x = np.random.randint(0, bg_w - w)
+    y = 0
+    if bg_h > h:
+        y = np.random.randint(0, bg_h - h)
     bg = np.array(bg[y:y + h, x:x + w], np.float32)
     alpha = np.zeros((h, w, 1), np.float32)
     alpha[:, :, 0] = a / 255.
     im = alpha * fg + (1 - alpha) * bg
     im = im.astype(np.uint8)
-    return im, alpha, fg, bg
+    return im, a, fg, bg
 
 
 def process(im_name, bg_name):
@@ -68,9 +73,9 @@ def process(im_name, bg_name):
 
 
 def generate_trimap(alpha):
-    fg = np.equal(alpha, 255).astype(np.float32)
+    fg = np.array(np.equal(alpha, 255).astype(np.float32))
     fg = cv.erode(fg, kernel, iterations=np.random.randint(1, 3))
-    unknown = np.not_equal(alpha, 0).astype(np.float32)
+    unknown = np.array(np.not_equal(alpha, 0).astype(np.float32))
     unknown = cv.dilate(unknown, kernel, iterations=np.random.randint(1, 20))
     trimap = fg * 255 + (unknown - fg) * 128
     return trimap.astype(np.uint8)
@@ -109,7 +114,7 @@ class DataGenSequence(Sequence):
 
         length = min(batch_size, (len(self.names) - i))
         batch_x = np.empty((length, img_rows, img_cols, 4), dtype=np.float32)
-        batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
+        batch_y = np.empty((length, img_rows, img_cols, 11), dtype=np.float32)
 
         for i_batch in range(length):
             name = self.names[i]
@@ -121,7 +126,7 @@ class DataGenSequence(Sequence):
 
             # crop size 320:640:480 = 1:1:1
             different_sizes = [(320, 320), (480, 480), (640, 640)]
-            crop_size = np.random.choice(different_sizes)
+            crop_size = random.choice(different_sizes)
 
             trimap = generate_trimap(alpha)
             x, y = random_choice(trimap, crop_size)
