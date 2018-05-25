@@ -4,7 +4,7 @@ import unittest
 import cv2 as cv
 import numpy as np
 import os
-from config import unknown
+from config import unknown_code
 from data_generator import generate_trimap
 from data_generator import get_alpha_test
 from data_generator import random_choice
@@ -23,9 +23,9 @@ class TestStringMethods(unittest.TestCase):
         h, w = trimap.shape[:2]
         for i in range(h):
             for j in range(w):
-                if trimap[i, j] == unknown:
+                if trimap[i, j] == unknown_code:
                     count += 1
-        x_indices, y_indices = np.where(trimap == unknown)
+        x_indices, y_indices = np.where(trimap == unknown_code)
         num_unknowns = len(x_indices)
         self.assertEqual(count, num_unknowns)
 
@@ -34,7 +34,7 @@ class TestStringMethods(unittest.TestCase):
         center_x = x_indices[ix]
         center_y = y_indices[ix]
 
-        self.assertEqual(trimap[center_x, center_y], unknown)
+        self.assertEqual(trimap[center_x, center_y], unknown_code)
 
         x, y = random_choice(trimap)
         print(x, y)

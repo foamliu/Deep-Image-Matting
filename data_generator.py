@@ -1,14 +1,15 @@
+import math
 import os
-import random
 from random import shuffle
 
 import cv2 as cv
 import numpy as np
 from keras.utils import Sequence
+
 from config import batch_size
-from config import img_cols
-from config import img_rows
-from config import unknown
+from config import fg_path, bg_path, a_path, out_path
+from config import img_cols, img_rows
+from config import unknown_code
 from utils import safe_crop
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
@@ -16,6 +17,10 @@ with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
     fg_files = f.read().splitlines()
 with open('Combined_Dataset/Test_set/test_fg_names.txt') as f:
     fg_test_files = f.read().splitlines()
+with open('Combined_Dataset/Training_set/training_bg_names.txt') as f:
+    bg_files = f.read().splitlines()
+with open('Combined_Dataset/Test_set/test_bg_names.txt') as f:
+    bg_test_files = f.read().splitlines()
 
 
 def get_alpha(name):
@@ -34,25 +39,51 @@ def get_alpha_test(name):
     return alpha
 
 
+def composite4(fg, bg, a, w, h):
+    fg = np.array(fg, np.float32)
+    bg_h, bg_w = bg.shape[:2]
+    x = np.random.randint(0, bg_w - w)
+    y = np.random.randint(0, bg_h - h)
+    bg = np.array(bg[y:y + h, x:x + w], np.float32)
+    alpha = np.zeros((h, w, 1), np.float32)
+    alpha[:, :, 0] = a / 255.
+    im = alpha * fg + (1 - alpha) * bg
+    im = im.astype(np.uint8)
+    return im, alpha, fg, bg
+
+
+def process(im_name, bg_name):
+    im = cv.imread(fg_path + im_name)
+    a = cv.imread(a_path + im_name, 0)
+    h, w = im.shape[:2]
+    bg = cv.imread(bg_path + bg_name)
+    bh, bw = bg.shape[:2]
+    wratio = w / bw
+    hratio = h / bh
+    ratio = wratio if wratio > hratio else hratio
+    if ratio > 1:
+        bg = cv.resize(src=bg, dsize=(math.ceil(bw * ratio), math.ceil(bh * ratio)), interpolation=cv.INTER_CUBIC)
+
+    return composite4(im, bg, a, w, h)
+
+
 def generate_trimap(alpha):
-    iter = random.randint(1, 20)
-    fg = alpha.copy()
-    fg[alpha != 255] = 0
-    unknown = alpha.copy()
-    unknown[alpha != 0] = 255
-    unknown = cv.dilate(unknown, kernel, iterations=iter)
-    trimap = np.sign(unknown - fg) * 128 + fg
-    return np.array(trimap).astype(np.uint8)
+    fg = np.equal(alpha, 255).astype(np.float32)
+    fg = cv.erode(fg, kernel, iterations=np.random.randint(1, 3))
+    unknown = np.not_equal(alpha, 0).astype(np.float32)
+    unknown = cv.dilate(unknown, kernel, iterations=np.random.randint(1, 20))
+    trimap = fg * 255 + (unknown - fg) * 128
+    return trimap.astype(np.uint8)
 
 
-# Randomly crop 320x320 (image, trimap) pairs centered on pixels in the unknown regions.
+# Randomly crop (image, trimap) pairs centered on pixels in the unknown regions.
 def random_choice(trimap, crop_size=(320, 320)):
     crop_height, crop_width = crop_size
-    y_indices, x_indices = np.where(trimap == unknown)
+    y_indices, x_indices = np.where(trimap == unknown_code)
     num_unknowns = len(y_indices)
     x, y = 0, 0
     if num_unknowns > 0:
-        ix = random.choice(range(num_unknowns))
+        ix = np.random.choice(range(num_unknowns))
         center_x = x_indices[ix]
         center_y = y_indices[ix]
         x = max(0, center_x - int(crop_width / 2))
@@ -82,31 +113,41 @@ class DataGenSequence(Sequence):
 
         for i_batch in range(length):
             name = self.names[i]
-            filename = os.path.join('merged', name)
-            image = cv.imread(filename)
-            bg_h, bg_w = image.shape[:2]
-            a = get_alpha(name)
-            a_h, a_w = a.shape[:2]
-            alpha = np.zeros((bg_h, bg_w), np.float32)
-            alpha[0:a_h, 0:a_w] = a
-            trimap = generate_trimap(alpha)
-            # 剪切尺寸 320:640:480 = 3:1:1
-            # different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
-            # crop_size = random.choice(different_sizes)
+            fcount = int(name.split('.')[0].split('_')[0])
+            bcount = int(name.split('.')[0].split('_')[1])
+            im_name = fg_files[fcount]
+            bg_name = bg_files[bcount]
+            image, alpha, fg, bg = process(im_name, bg_name)
 
-            x, y = random_choice(trimap)
-            image = safe_crop(image, x, y)
-            trimap = safe_crop(trimap, x, y)
-            alpha = safe_crop(alpha, x, y)
-            # 随机水平反转 (概率1:1)
+            # crop size 320:640:480 = 1:1:1
+            different_sizes = [(320, 320), (480, 480), (640, 640)]
+            crop_size = np.random.choice(different_sizes)
+
+            trimap = generate_trimap(alpha)
+            x, y = random_choice(trimap, crop_size)
+            image = safe_crop(image, x, y, crop_size)
+            alpha = safe_crop(alpha, x, y, crop_size)
+            fg = safe_crop(fg, x, y, crop_size)
+            bg = safe_crop(bg, x, y, crop_size)
+
+            trimap = generate_trimap(alpha)
+
+            # Flip array left to right randomly (prob=1:1)
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)
                 trimap = np.fliplr(trimap)
                 alpha = np.fliplr(alpha)
+
             batch_x[i_batch, :, :, 0:3] = image / 255.
             batch_x[i_batch, :, :, 3] = trimap / 255.
+
+            mask = np.equal(trimap, 128).astype(np.float32)
             batch_y[i_batch, :, :, 0] = alpha / 255.
-            batch_y[i_batch, :, :, 1] = trimap / 255.
+            batch_y[i_batch, :, :, 1] = mask
+            batch_y[i_batch, :, :, 2:5] = image / 255.
+            batch_y[i_batch, :, :, 5:8] = fg / 255.
+            batch_y[i_batch, :, :, 8:11] = bg / 255.
+
 
             i += 1
 
@@ -136,7 +177,7 @@ def shuffle_data():
             names.append(str(fcount) + '_' + str(bcount) + '.png')
             bcount += 1
 
-    valid_names = random.sample(names, num_valid_samples)
+    valid_names = np.random.sample(names, num_valid_samples)
     train_names = [n for n in names if n not in valid_names]
     shuffle(valid_names)
     shuffle(train_names)
