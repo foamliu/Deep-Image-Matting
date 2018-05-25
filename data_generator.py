@@ -153,7 +153,6 @@ class DataGenSequence(Sequence):
             batch_y[i_batch, :, :, 5:8] = fg / 255.
             batch_y[i_batch, :, :, 8:11] = bg / 255.
 
-
             i += 1
 
         return batch_x, batch_y
