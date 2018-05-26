@@ -74,7 +74,7 @@ def process(im_name, bg_name):
 
 def generate_trimap(alpha):
     fg = np.array(np.equal(alpha, 255).astype(np.float32))
-    fg = cv.erode(fg, kernel, iterations=np.random.randint(1, 3))
+    # fg = cv.erode(fg, kernel, iterations=np.random.randint(1, 3))
     unknown = np.array(np.not_equal(alpha, 0).astype(np.float32))
     unknown = cv.dilate(unknown, kernel, iterations=np.random.randint(1, 20))
     trimap = fg * 255 + (unknown - fg) * 128
