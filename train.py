@@ -76,5 +76,5 @@ if __name__ == '__main__':
                         verbose=1,
                         callbacks=callbacks,
                         use_multiprocessing=True,
-                        workers=int(get_available_cpus() * 0.8)
+                        workers=int(get_available_cpus() / 2)
                         )
