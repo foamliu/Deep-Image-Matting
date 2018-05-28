@@ -55,7 +55,7 @@ if __name__ == '__main__':
     for layer in final.layers:
         layer.trainable = True
 
-    # sgd = keras.optimizers.SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = keras.optimizers.SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
     final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
 
