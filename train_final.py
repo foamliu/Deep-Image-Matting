@@ -8,7 +8,7 @@ from keras.utils import multi_gpu_model
 from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from data_generator import train_gen, valid_gen
 from model import build_encoder_decoder, build_refinement
-from utils import alpha_prediction_loss, get_available_cpus, get_available_gpus
+from utils import overall_loss, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'
@@ -55,9 +55,9 @@ if __name__ == '__main__':
     for layer in final.layers:
         layer.trainable = True
 
-    sgd = keras.optimizers.SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
+    # sgd = keras.optimizers.SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
-    final.compile(optimizer=sgd, loss=alpha_prediction_loss, target_tensors=[decoder_target])
+    final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
 
     print(final.summary())
 
