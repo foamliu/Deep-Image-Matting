@@ -131,4 +131,5 @@ if __name__ == '__main__':
 
     if not os.path.exists(out_test_path):
         os.makedirs(out_test_path)
-        do_composite_test()
+
+    do_composite_test()
