@@ -83,66 +83,51 @@ if __name__ == '__main__':
     test_folder = 'Combined_Dataset/Test_set/'
 
     if not os.path.exists(bg_test_path):
-        if not os.path.exists('VOCdevkit'):
-            # tar_file = 'VOCtrainval_06-Nov-2007.tar'
-            # print('Extracting {}...'.format(tar_file))
-            #
-            # tar = tarfile.open(tar_file)
-            # tar.extractall()
-            # tar.close()
-            #
-            # tar_file = 'VOCtest_06-Nov-2007.tar'
-            # print('Extracting {}...'.format(tar_file))
-            #
-            # tar = tarfile.open(tar_file)
-            # tar.extractall()
-            # tar.close()
+        os.makedirs(bg_test_path)
 
-            tar_file = 'VOCtrainval_14-Jul-2008.tar'
-            print('Extracting {}...'.format(tar_file))
+    tar_file = 'VOCtrainval_14-Jul-2008.tar'
+    print('Extracting {}...'.format(tar_file))
 
-            tar = tarfile.open(tar_file)
-            tar.extractall()
-            tar.close()
+    tar = tarfile.open(tar_file)
+    tar.extractall()
+    tar.close()
 
-            tar_file = 'VOC2008test.tar'
-            print('Extracting {}...'.format(tar_file))
+    tar_file = 'VOC2008test.tar'
+    print('Extracting {}...'.format(tar_file))
 
-            tar = tarfile.open(tar_file)
-            tar.extractall()
-            tar.close()
+    tar = tarfile.open(tar_file)
+    tar.extractall()
+    tar.close()
 
-            os.makedirs(bg_test_path)
+    test_bg_names = []
+    with open(os.path.join(test_folder, 'test_bg_names.txt')) as f:
+        test_bg_names = f.read().splitlines()
 
-            test_bg_names = []
-            with open(os.path.join(test_folder, 'test_bg_names.txt')) as f:
-                test_bg_names = f.read().splitlines()
-
-            for bg_name in test_bg_names:
-                tokens = bg_name.split('_')
-                src_path = os.path.join('VOCdevkit\VOC2008\JPEGImages', bg_name)
-                dest_path = os.path.join(bg_test_path, bg_name)
-                shutil.move(src_path, dest_path)
+    for bg_name in test_bg_names:
+        tokens = bg_name.split('_')
+        src_path = os.path.join('VOCdevkit\VOC2008\JPEGImages', bg_name)
+        dest_path = os.path.join(bg_test_path, bg_name)
+        shutil.move(src_path, dest_path)
 
     if not os.path.exists(fg_test_path):
         os.makedirs(fg_test_path)
 
-        for old_folder in [test_folder + 'Adobe-licensed images/fg']:
-            fg_files = os.listdir(old_folder)
-            for fg_file in fg_files:
-                src_path = os.path.join(old_folder, fg_file)
-                dest_path = os.path.join(fg_test_path, fg_file)
-                shutil.move(src_path, dest_path)
+    for old_folder in [test_folder + 'Adobe-licensed images/fg']:
+        fg_files = os.listdir(old_folder)
+        for fg_file in fg_files:
+            src_path = os.path.join(old_folder, fg_file)
+            dest_path = os.path.join(fg_test_path, fg_file)
+            shutil.move(src_path, dest_path)
 
     if not os.path.exists(a_test_path):
         os.makedirs(a_test_path)
 
-        for old_folder in [test_folder + 'Adobe-licensed images/alpha']:
-            a_files = os.listdir(old_folder)
-            for a_file in a_files:
-                src_path = os.path.join(old_folder, a_file)
-                dest_path = os.path.join(a_test_path, a_file)
-                shutil.move(src_path, dest_path)
+    for old_folder in [test_folder + 'Adobe-licensed images/alpha']:
+        a_files = os.listdir(old_folder)
+        for a_file in a_files:
+            src_path = os.path.join(old_folder, a_file)
+            dest_path = os.path.join(a_test_path, a_file)
+            shutil.move(src_path, dest_path)
 
     if not os.path.exists(out_test_path):
         os.makedirs(out_test_path)
