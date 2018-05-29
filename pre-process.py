@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     for bg_name in test_bg_names:
         tokens = bg_name.split('_')
-        src_path = os.path.join('VOCdevkit\VOC2008\JPEGImages', bg_name)
+        src_path = os.path.join('VOCdevkit/VOC2008/JPEGImages', bg_name)
         dest_path = os.path.join(bg_test_path, bg_name)
         shutil.move(src_path, dest_path)
 
