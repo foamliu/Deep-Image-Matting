@@ -14,7 +14,7 @@ if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
 
-    pretrained_path = 'models/final.42-0.0398.hdf5'
+    pretrained_path = 'models/model.17-0.1551.hdf5'
     encoder_decoder = build_encoder_decoder()
     final = build_refinement(encoder_decoder)
     final.load_weights(pretrained_path)
