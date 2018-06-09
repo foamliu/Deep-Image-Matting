@@ -8,7 +8,7 @@ from keras.utils import multi_gpu_model
 from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from data_generator import train_gen, valid_gen
 from resnet import build_model
-from utils import overall_loss, get_available_cpus, get_available_gpus
+from utils import alpha_prediction_loss, get_available_cpus, get_available_gpus
 
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'
@@ -41,14 +41,16 @@ if __name__ == '__main__':
         with tf.device("/cpu:0"):
             # Load our model, added support for Multi-GPUs
             model = build_model()
-            model.load_weights(pretrained_path)
+            if pretrained_path is not None:
+                model.load_weights(pretrained_path)
 
         new_model = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyCbk(model)
     else:
         new_model = build_model()
-        new_model.load_weights(pretrained_path)
+        if pretrained_path is not None:
+            new_model.load_weights(pretrained_path)
 
     # finetune the whole network together.
     for layer in new_model.layers:
@@ -57,7 +59,7 @@ if __name__ == '__main__':
     # sgd = keras.optimizers.SGD(lr=1e-5, decay=1e-6, momentum=0.9, nesterov=True)
     nadam = keras.optimizers.Nadam(lr=2e-5)
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
-    new_model.compile(optimizer=nadam, loss=overall_loss, target_tensors=[decoder_target])
+    new_model.compile(optimizer=nadam, loss=alpha_prediction_loss, target_tensors=[decoder_target])
 
     print(new_model.summary())
 

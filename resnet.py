@@ -3,11 +3,11 @@ from keras.layers import Input, Conv2D, Add, Lambda
 from keras.models import Model
 from keras.utils import plot_model
 
-img_rows, img_cols = 320, 320
+img_rows, img_cols = 256, 256
 channel = 4
 feature_size = 64
 kernel = 3
-num_layers = 32
+num_layers = 48
 scaling_factor = .1
 
 
