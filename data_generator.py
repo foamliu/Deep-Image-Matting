@@ -181,6 +181,7 @@ def shuffle_data():
             names.append(str(fcount) + '_' + str(bcount) + '.png')
             bcount += 1
 
+    from config import num_valid_samples
     valid_names = np.random.sample(names, num_valid_samples)
     train_names = [n for n in names if n not in valid_names]
     shuffle(valid_names)
