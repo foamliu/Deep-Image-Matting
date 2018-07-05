@@ -36,7 +36,6 @@ if __name__ == '__main__':
         zip_ref.extractall('.')
         zip_ref.close()
 
-        training_bg_names = []
         with open(os.path.join(train_folder, 'training_bg_names.txt')) as f:
             training_bg_names = f.read().splitlines()
 
@@ -99,7 +98,6 @@ if __name__ == '__main__':
     tar.extractall()
     tar.close()
 
-    test_bg_names = []
     with open(os.path.join(test_folder, 'test_bg_names.txt')) as f:
         test_bg_names = f.read().splitlines()
 
