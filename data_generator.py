@@ -132,8 +132,6 @@ class DataGenSequence(Sequence):
             x, y = random_choice(trimap, crop_size)
             image = safe_crop(image, x, y, crop_size)
             alpha = safe_crop(alpha, x, y, crop_size)
-            fg = safe_crop(fg, x, y, crop_size)
-            bg = safe_crop(bg, x, y, crop_size)
 
             trimap = generate_trimap(alpha)
 
@@ -179,7 +177,7 @@ def shuffle_data():
             bcount += 1
 
     from config import num_valid_samples
-    valid_names = np.random.sample(names, num_valid_samples)
+    valid_names = random.sample(names, num_valid_samples)
     train_names = [n for n in names if n not in valid_names]
     shuffle(valid_names)
     shuffle(train_names)
