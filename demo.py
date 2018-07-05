@@ -26,7 +26,7 @@ def composite4(fg, bg, a, w, h):
     alpha[:, :, 0] = a / 255.
     im = alpha * fg + (1 - alpha) * bg
     im = im.astype(np.uint8)
-    return im
+    return im, bg
 
 
 if __name__ == '__main__':
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         x_test[0, :, :, 0:3] = bgr_img / 255.
         x_test[0, :, :, 3] = trimap / 255.
 
-        y_true = np.empty((1, 320, 320, 2), dtype=np.float32)
+        y_true = np.empty((1, img_rows, img_cols, 2), dtype=np.float32)
         y_true[0, :, :, 0] = alpha / 255.
         y_true[0, :, :, 1] = trimap / 255.
 
@@ -113,8 +113,8 @@ if __name__ == '__main__':
         ratio = wratio if wratio > hratio else hratio
         if ratio > 1:
             bg = cv.resize(src=bg, dsize=(math.ceil(bw * ratio), math.ceil(bh * ratio)), interpolation=cv.INTER_CUBIC)
-        compose = composite4(bgr_img, bg, y_pred, 320, 320)
-        cv.imwrite('images/{}_compose.png'.format(i), compose)
+        im, bg = composite4(bgr_img, bg, y_pred, img_cols, img_rows)
+        cv.imwrite('images/{}_compose.png'.format(i), im)
         cv.imwrite('images/{}_new_bg.png'.format(i), bg)
 
     K.clear_session()
