@@ -10,6 +10,24 @@ from model import build_encoder_decoder, build_refinement
 from utils import get_final_output, safe_crop, draw_str
 from utils import compute_mse_loss, compute_sad_loss
 
+
+def composite4(fg, bg, a, w, h):
+    fg = np.array(fg, np.float32)
+    bg_h, bg_w = bg.shape[:2]
+    x = 0
+    if bg_w > w:
+        x = np.random.randint(0, bg_w - w)
+    y = 0
+    if bg_h > h:
+        y = np.random.randint(0, bg_h - h)
+    bg = np.array(bg[y:y + h, x:x + w], np.float32)
+    alpha = np.zeros((h, w, 1), np.float32)
+    alpha[:, :, 0] = a / 255.
+    im = alpha * fg + (1 - alpha) * bg
+    im = im.astype(np.uint8)
+    return im
+
+
 if __name__ == '__main__':
     img_rows, img_cols = 320, 320
     channel = 4
@@ -24,6 +42,11 @@ if __name__ == '__main__':
     test_images = [f for f in os.listdir(out_test_path) if
                    os.path.isfile(os.path.join(out_test_path, f)) and f.endswith('.png')]
     samples = random.sample(test_images, 10)
+
+    bg_test = 'bg_test/'
+    test_bgs = [f for f in os.listdir(bg_test) if
+                   os.path.isfile(os.path.join(bg_test, f)) and f.endswith('.jpg')]
+    sample_bgs = random.sample(test_bgs, 10)
 
     total_loss = 0.0
     for i in range(len(samples)):
@@ -73,8 +96,13 @@ if __name__ == '__main__':
         str_msg = 'sad_loss: %.4f, mse_loss: %.4f, crop_size: %s' % (sad_loss, mse_loss, str(crop_size))
         print(str_msg)
 
-        out = y_pred
+        out = y_pred.copy()
         draw_str(out, (10, 20), str_msg)
         cv.imwrite('images/{}_out.png'.format(i), out)
+
+        sample_bg = sample_bgs[i]
+        bg = cv.imread(os.path.join(bg_test, sample_bg))
+        compose = composite4(bgr_img, bg, y_pred, 320, 320)
+        cv.imwrite('images/{}_compose.png'.format(i), compose)
 
     K.clear_session()
