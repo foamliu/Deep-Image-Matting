@@ -1,3 +1,4 @@
+import math
 import os
 import random
 
@@ -7,8 +8,8 @@ import numpy as np
 
 from data_generator import generate_trimap, random_choice, get_alpha_test
 from model import build_encoder_decoder, build_refinement
-from utils import get_final_output, safe_crop, draw_str
 from utils import compute_mse_loss, compute_sad_loss
+from utils import get_final_output, safe_crop, draw_str
 
 
 def composite4(fg, bg, a, w, h):
@@ -45,28 +46,32 @@ if __name__ == '__main__':
 
     bg_test = 'bg_test/'
     test_bgs = [f for f in os.listdir(bg_test) if
-                   os.path.isfile(os.path.join(bg_test, f)) and f.endswith('.jpg')]
+                os.path.isfile(os.path.join(bg_test, f)) and f.endswith('.jpg')]
     sample_bgs = random.sample(test_bgs, 10)
 
     total_loss = 0.0
     for i in range(len(samples)):
         filename = samples[i]
         image_name = filename.split('.')[0]
-        print('Start processing image: {}'.format(filename))
-        x_test = np.empty((1, img_rows, img_cols, 4), dtype=np.float32)
+
+        print('\nStart processing image: {}'.format(filename))
+
         bgr_img = cv.imread(os.path.join(out_test_path, filename))
         bg_h, bg_w = bgr_img.shape[:2]
-        print(bg_h, bg_w)
+        print('bg_h, bg_w: ' + str((bg_h, bg_w)))
+
         a = get_alpha_test(image_name)
         a_h, a_w = a.shape[:2]
-        print(a_h, a_w)
+        print('a_h, a_w: ' + str((a_h, a_w)))
+
         alpha = np.zeros((bg_h, bg_w), np.float32)
         alpha[0:a_h, 0:a_w] = a
         trimap = generate_trimap(alpha)
         different_sizes = [(320, 320), (320, 320), (320, 320), (480, 480), (640, 640)]
         crop_size = random.choice(different_sizes)
         x, y = random_choice(trimap, crop_size)
-        print(x, y)
+        print('x, y: ' + str((x, y)))
+
         bgr_img = safe_crop(bgr_img, x, y, crop_size)
         alpha = safe_crop(alpha, x, y, crop_size)
         trimap = safe_crop(trimap, x, y, crop_size)
@@ -74,7 +79,7 @@ if __name__ == '__main__':
         cv.imwrite('images/{}_trimap.png'.format(i), np.array(trimap).astype(np.uint8))
         cv.imwrite('images/{}_alpha.png'.format(i), np.array(alpha).astype(np.uint8))
 
-        x_test = np.empty((1, 320, 320, 4), dtype=np.float32)
+        x_test = np.empty((1, img_rows, img_cols, 4), dtype=np.float32)
         x_test[0, :, :, 0:3] = bgr_img / 255.
         x_test[0, :, :, 3] = trimap / 255.
 
@@ -102,7 +107,14 @@ if __name__ == '__main__':
 
         sample_bg = sample_bgs[i]
         bg = cv.imread(os.path.join(bg_test, sample_bg))
+        bh, bw = bg.shape[:2]
+        wratio = img_cols / bw
+        hratio = img_rows / bh
+        ratio = wratio if wratio > hratio else hratio
+        if ratio > 1:
+            bg = cv.resize(src=bg, dsize=(math.ceil(bw * ratio), math.ceil(bh * ratio)), interpolation=cv.INTER_CUBIC)
         compose = composite4(bgr_img, bg, y_pred, 320, 320)
         cv.imwrite('images/{}_compose.png'.format(i), compose)
+        cv.imwrite('images/{}_new_bg.png'.format(i), bg)
 
     K.clear_session()
