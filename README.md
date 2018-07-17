@@ -42,7 +42,7 @@ $ tensorboard --logdir path_to_current_dir/logs
 ```
 
 ### Demo
-
+Download pre-trained Deep Image Matting [Model](https://github.com/foamliu/Deep-Image-Matting/releases/download/v1.0/final.42-0.0398.hdf5) to "models" folder then run:
 ```bash
 $ python demo.py
 ```
