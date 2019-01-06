@@ -28,7 +28,7 @@ Download [VGG16](https://github.com/fchollet/deep-learning-models/releases/downl
 ### Data Pre-processing
 Extract training images:
 ```bash
-$ python pre-process.py
+$ python pre_process.py
 ```
 
 ### Train
