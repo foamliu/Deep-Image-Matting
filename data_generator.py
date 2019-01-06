@@ -27,7 +27,7 @@ with open('Combined_Dataset/Test_set/test_bg_names.txt') as f:
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
     name = fg_files[fg_i]
-    filename = os.path.join('mask', name)
+    filename = os.path.join('data/mask', name)
     alpha = cv.imread(filename, 0)
     return alpha
 
@@ -35,7 +35,7 @@ def get_alpha(name):
 def get_alpha_test(name):
     fg_i = int(name.split("_")[0])
     name = fg_test_files[fg_i]
-    filename = os.path.join('mask_test', name)
+    filename = os.path.join('data/mask_test', name)
     alpha = cv.imread(filename, 0)
     return alpha
 

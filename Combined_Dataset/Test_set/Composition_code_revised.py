@@ -2,22 +2,22 @@ import math
 import time
 import cv2 as cv
 import numpy as np
-from console_progressbar import ProgressBar
+from tqdm import tqdm
 
 ##############################################################
 # Set your paths here
 
 # path to provided foreground images
-fg_path = 'fg_test/'
+fg_path = 'data/fg_test/'
 
 # path to provided alpha mattes
-a_path = 'mask_test/'
+a_path = 'data/mask_test/'
 
 # Path to background images (MSCOCO)
-bg_path = 'bg_test/'
+bg_path = 'data/bg_test/'
 
 # Path to folder where you want the composited images to go
-out_path = 'merged_test/'
+out_path = 'data/merged_test/'
 
 
 ##############################################################
@@ -60,10 +60,10 @@ def do_composite_test():
     # a_files = os.listdir(a_path)
     num_samples = len(fg_files) * num_bgs
 
-    pb = ProgressBar(total=100, prefix='Compose test images', suffix='', decimals=3, length=50, fill='=')
+    # pb = ProgressBar(total=100, prefix='Compose test images', suffix='', decimals=3, length=50, fill='=')
     start = time.time()
     bcount = 0
-    for fcount in range(len(fg_files)):
+    for fcount in tqdm(range(len(fg_files))):
         im_name = fg_files[fcount]
 
         for i in range(num_bgs):
@@ -71,7 +71,7 @@ def do_composite_test():
             process(im_name, bg_name, fcount, bcount)
             bcount += 1
 
-            pb.print_progress_bar(bcount * 100.0 / num_samples)
+            # pb.print_progress_bar(bcount * 100.0 / num_samples)
 
     end = time.time()
     elapsed = end - start

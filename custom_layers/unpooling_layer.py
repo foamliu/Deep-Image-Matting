@@ -1,6 +1,6 @@
 from keras import backend as K
 from keras.engine.topology import Layer
-from keras.layers import Reshape, Concatenate, Lambda, Multiply
+from keras.layers import Lambda, Multiply
 
 
 class Unpooling(Layer):

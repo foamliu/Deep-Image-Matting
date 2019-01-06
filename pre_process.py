@@ -10,30 +10,30 @@ from Combined_Dataset.Test_set.Composition_code_revised import do_composite_test
 
 if __name__ == '__main__':
     # path to provided foreground images
-    fg_path = 'fg/'
+    fg_path = 'data/fg/'
     # path to provided alpha mattes
-    a_path = 'mask/'
+    a_path = 'data/mask/'
     # Path to background images (MSCOCO)
-    bg_path = 'bg/'
+    bg_path = 'data/bg/'
     # Path to folder where you want the composited images to go
-    out_path = 'merged/'
+    out_path = 'data/merged/'
 
     train_folder = 'Combined_Dataset/Training_set/'
 
     # if not os.path.exists('Combined_Dataset'):
-    zip_file = 'Adobe_Deep_Matting_Dataset.zip'
+    zip_file = 'data/Adobe_Deep_Matting_Dataset.zip'
     print('Extracting {}...'.format(zip_file))
 
     zip_ref = zipfile.ZipFile(zip_file, 'r')
-    zip_ref.extractall('.')
+    zip_ref.extractall('data')
     zip_ref.close()
 
     if not os.path.exists(bg_path):
-        zip_file = 'train2014.zip'
+        zip_file = 'data/train2014.zip'
         print('Extracting {}...'.format(zip_file))
 
         zip_ref = zipfile.ZipFile(zip_file, 'r')
-        zip_ref.extractall('.')
+        zip_ref.extractall('data')
         zip_ref.close()
 
         with open(os.path.join(train_folder, 'training_bg_names.txt')) as f:
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
         os.makedirs(bg_path)
         for bg_name in training_bg_names:
-            src_path = os.path.join('train2014', bg_name)
+            src_path = os.path.join('data/train2014', bg_name)
             dest_path = os.path.join(bg_path, bg_name)
             shutil.move(src_path, dest_path)
 
@@ -70,13 +70,13 @@ if __name__ == '__main__':
     # do_composite()
 
     # path to provided foreground images
-    fg_test_path = 'fg_test/'
+    fg_test_path = 'data/fg_test/'
     # path to provided alpha mattes
-    a_test_path = 'mask_test/'
+    a_test_path = 'data/mask_test/'
     # Path to background images (PASCAL VOC)
-    bg_test_path = 'bg_test/'
+    bg_test_path = 'data/bg_test/'
     # Path to folder where you want the composited images to go
-    out_test_path = 'merged_test/'
+    out_test_path = 'data/merged_test/'
 
     # test data gen
     test_folder = 'Combined_Dataset/Test_set/'
@@ -84,18 +84,18 @@ if __name__ == '__main__':
     if not os.path.exists(bg_test_path):
         os.makedirs(bg_test_path)
 
-    tar_file = 'VOCtrainval_14-Jul-2008.tar'
+    tar_file = 'data/VOCtrainval_14-Jul-2008.tar'
     print('Extracting {}...'.format(tar_file))
 
     tar = tarfile.open(tar_file)
-    tar.extractall()
+    tar.extractall('data')
     tar.close()
 
-    tar_file = 'VOC2008test.tar'
+    tar_file = 'data/VOC2008test.tar'
     print('Extracting {}...'.format(tar_file))
 
     tar = tarfile.open(tar_file)
-    tar.extractall()
+    tar.extractall('data')
     tar.close()
 
     with open(os.path.join(test_folder, 'test_bg_names.txt')) as f:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     for bg_name in test_bg_names:
         tokens = bg_name.split('_')
-        src_path = os.path.join('VOCdevkit/VOC2008/JPEGImages', bg_name)
+        src_path = os.path.join('data/VOCdevkit/VOC2008/JPEGImages', bg_name)
         dest_path = os.path.join(bg_test_path, bg_name)
         shutil.move(src_path, dest_path)
 

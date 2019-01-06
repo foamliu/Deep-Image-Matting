@@ -18,20 +18,16 @@ if __name__ == '__main__':
         filename = os.path.join('alphamatting/input_lowres', image_name)
         im = cv.imread(filename)
         im_h, im_w = im.shape[:2]
-        
+
         for id in [1, 2, 3]:
             trimap_name = os.path.join('alphamatting/trimap_lowres/Trimap{}'.format(id), image_name)
             trimap = cv.imread(trimap_name, 0)
-			
-			for i in range(0, np.ceil(im_h/320)):
-				for j in range(0, np.ceil(im_w/320)):
-					x = j * 320
-					y = i * 320
-					w = min(320, im_w - x)
-					h = min(320, im_h - y)
-					im_crop = im[y:y+h,x:x+w]
-					tri_crop = trimap[y:y+h,x:x+w]
-			
-			
 
-
+            for i in range(0, np.ceil(im_h / 320)):
+                for j in range(0, np.ceil(im_w / 320)):
+                    x = j * 320
+                    y = i * 320
+                    w = min(320, im_w - x)
+                    h = min(320, im_h - y)
+                    im_crop = im[y:y + h, x:x + w]
+                    tri_crop = trimap[y:y + h, x:x + w]

@@ -39,12 +39,12 @@ if __name__ == '__main__':
     final.load_weights(pretrained_path)
     print(final.summary())
 
-    out_test_path = 'merged_test/'
+    out_test_path = 'data/merged_test/'
     test_images = [f for f in os.listdir(out_test_path) if
                    os.path.isfile(os.path.join(out_test_path, f)) and f.endswith('.png')]
     samples = random.sample(test_images, 10)
 
-    bg_test = 'bg_test/'
+    bg_test = 'data/bg_test/'
     test_bgs = [f for f in os.listdir(bg_test) if
                 os.path.isfile(os.path.join(bg_test, f)) and f.endswith('.jpg')]
     sample_bgs = random.sample(test_bgs, 10)

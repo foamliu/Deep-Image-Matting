@@ -16,16 +16,15 @@ epsilon_sqr = epsilon ** 2
 # Set your paths here
 
 # path to provided foreground images
-fg_path = 'fg/'
+fg_path = 'data/fg/'
 
 # path to provided alpha mattes
-a_path = 'mask/'
+a_path = 'data/mask/'
 
 # Path to background images (MSCOCO)
-bg_path = 'bg/'
+bg_path = 'data/bg/'
 
 # Path to folder where you want the composited images to go
-out_path = 'merged/'
-
+out_path = 'data/merged/'
 
 ##############################################################
