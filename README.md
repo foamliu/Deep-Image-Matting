@@ -3,8 +3,8 @@ This repository is to reproduce Deep Image Matting.
 
 ## Dependencies
 - [NumPy](http://docs.scipy.org/doc/numpy-1.10.1/user/install.html)
-- [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html)
-- [Keras](https://keras.io/#installation)
+- [Tensorflow 1.9.0](https://www.tensorflow.org/)
+- [Keras 2.1.6](https://keras.io/#installation)
 - [OpenCV](https://opencv-python-tutroals.readthedocs.io/en/latest/)
 
 ## Dataset
