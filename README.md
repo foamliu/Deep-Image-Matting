@@ -19,6 +19,7 @@ Go to [MSCOCO](http://cocodataset.org/#download) to download:
 ### PASCAL VOC
 Go to [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) to download:
 * VOC challenge 2008 [training/validation data](http://host.robots.ox.ac.uk/pascal/VOC/voc2008/VOCtrainval_14-Jul-2008.tar)
+* The test data for the VOC2008 challenge
 
 ## ImageNet Pretrained Models
 Download [VGG16](https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels.h5) into models folder.
