@@ -52,9 +52,9 @@ def process(im_name, bg_name, fcount, bcount):
 def do_composite_test():
     num_bgs = 20
 
-    with open('Combined_Dataset/Test_set/test_bg_names.txt') as f:
+    with open('data/Combined_Dataset/Test_set/test_bg_names.txt') as f:
         bg_files = f.read().splitlines()
-    with open('Combined_Dataset/Test_set/test_fg_names.txt') as f:
+    with open('data/Combined_Dataset/Test_set/test_fg_names.txt') as f:
         fg_files = f.read().splitlines()
 
     # a_files = os.listdir(a_path)
