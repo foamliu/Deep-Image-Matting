@@ -18,7 +18,7 @@ if __name__ == '__main__':
     # Path to folder where you want the composited images to go
     out_path = 'data/merged/'
 
-    train_folder = 'Combined_Dataset/Training_set/'
+    train_folder = 'data/Combined_Dataset/Training_set/'
 
     # if not os.path.exists('Combined_Dataset'):
     zip_file = 'data/Adobe_Deep_Matting_Dataset.zip'
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     out_test_path = 'data/merged_test/'
 
     # test data gen
-    test_folder = 'Combined_Dataset/Test_set/'
+    test_folder = 'data/Combined_Dataset/Test_set/'
 
     if not os.path.exists(bg_test_path):
         os.makedirs(bg_test_path)
