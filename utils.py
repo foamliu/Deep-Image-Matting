@@ -1,5 +1,5 @@
 import multiprocessing
-
+import math
 import cv2 as cv
 import keras.backend as K
 import numpy as np
@@ -88,6 +88,45 @@ def get_final_output(out, trimap):
     mask = np.equal(trimap, unknown_code).astype(np.float32)
     return (1 - mask) * trimap + mask * out
 
+def patch_dims(mat_size, patch_size):
+    return np.ceil(np.array(mat_size) / patch_size).astype(int)
+
+def create_patches(mat, patch_size):
+    mat_size = mat.shape
+    assert len(mat_size) == 3, "Input mat need to have 4 channels (R, G, B, trimap)"
+    assert mat_size[-1] == 4 , "Input mat need to have 4 channels (R, G, B, trimap)"
+
+    patches_dim = patch_dims(mat_size=mat_size[:2], patch_size=patch_size)
+    patches_count = np.product(patches_dim)
+
+    patches = np.zeros(shape=(patches_count, patch_size, patch_size, 4), dtype=np.float32)
+    for y in range(patches_dim[0]):
+        y_start = y * patch_size
+        for x in range(patches_dim[1]):
+            x_start = x * patch_size
+
+            # extract patch from input mat
+            single_patch = mat[y_start: y_start + patch_size, x_start: x_start + patch_size, :]
+
+            # zero pad patch in bottom and right side if real patch size is smaller than patch size
+            real_patch_h, real_patch_w = single_patch.shape[:2]
+            patch_id = y + x * patches_dim[0]
+            patches[patch_id, :real_patch_h, :real_patch_w, :] = single_patch
+
+    return patches
+
+def assemble_patches(pred_patches, mat_size, patch_size):
+    patch_dim_h, patch_dim_w = patch_dims(mat_size=mat_size, patch_size=patch_size)
+    result = np.zeros(shape=(patch_size * patch_dim_h, patch_size * patch_dim_w), dtype=np.uint8)
+    patches_count = pred_patches.shape[0]
+
+    for i in range(patches_count):
+        y = (i % patch_dim_h) * patch_size
+        x = int(math.floor(i / patch_dim_h)) * patch_size
+
+        result[y:y+patch_size, x:x+patch_size] = pred_patches[i]
+
+    return result
 
 def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
     crop_height, crop_width = crop_size
