@@ -1,3 +1,5 @@
+Just in case you are interested, [Deep Image Matting v2](https://github.com/foamliu/Deep-Image-Matting-v2) is an upgraded version of this.
+
 # Deep Image Matting
 This repository is to reproduce Deep Image Matting.
 
